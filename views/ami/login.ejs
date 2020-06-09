@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <% include ./partials/head.ejs %>
+    <body class="app flex-row align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card-group">
+                        <div class="card p-4">
+                            <form id="login-form">
+                                <div class="card-body">
+                                    <h1 class="text-uppercase">Bicycle Shop Admin</h1>
+                                    <p class="text-muted">
+                                        Sign In to your account
+                                    </p>
+
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="icon-user"></i>
+                                            </span>
+                                        </div>
+                                        <input name="email" class="form-control" type="text" placeholder="Email" />
+                                    </div>
+                                    <div class="input-group mb-4">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="icon-lock"></i>
+                                            </span>
+                                        </div>
+                                        <input name="password" class="form-control" type="password" placeholder="Password" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <button id="login-btn" class="btn btn-primary btn-pill px-4" type="button">
+                                                <i class="icon-lock"></i>
+                                                Login
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% include ./partials/script.ejs %>
+        <script>
+            $(document).ready(function() {
+                async function authenticateUser(credentials) {
+                    disableButton('#login-btn');
+                    loadingDialog.open();
+
+                    try {
+                        const result = await $.post({ url: '/api/user/auth', data: JSON.stringify(credentials), contentType: 'application/json' });
+
+                        localStorage.setItem('account_admin', JSON.stringify(result));
+                        document.cookie = `session_admin=${result._id}`;
+
+                        if (result.role === 'admin') window.location.href = 'dashboard';
+                        else window.location.href = 'orders';
+
+                        return;
+
+                        window.location.href = 'orders';
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                        enableButton('#login-btn');
+                    }
+                }
+
+                $('body').on('click', '#login-btn', function() {
+                    const credentials = $('#login-form').serializeObject();
+
+                    if (!credentials.email.trim() || !credentials.password.trim()) return warningDialog('Email and Password are required.');
+                    if (!isValidEmail(credentials.email)) return warningDialog('Invalid Email.');
+
+                    authenticateUser(credentials);
+                });
+            });
+        </script>
+    </body>
+</html>

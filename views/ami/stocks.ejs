@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row h-100">
+                        <div class="col-lg-12" id="table-card">
+                            <div class="card">
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <input class="form-control" id="filter-stock" type="text" placeholder="Search" />
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <button id="add-mode-btn" class="btn btn-primary btn-pill btn-sm active float-right hide-admin" type="button" aria-pressed="true"><i class="fa fa-plus" aria-hidden="true"></i> Add Stock</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-lg-12">
+                                            <div class="table-responsive">
+                                                <table id="stock-table" class="table table-bordered animated fadeIn" style="width: 100%;"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12" id="add-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Add Stock</strong>
+                                    <button id="add-stock-btn" class="btn btn-primary btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Stock</button>
+                                    <button id="add-row-btn" class="btn btn-primary btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-plus" aria-hidden="true"></i> Add Row</button>
+                                    <button id="back-table-btn2" class="btn btn-light btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="add-stock-form">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <table id="add-stock-table" class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Product</th>
+                                                            <th>Product #</th>
+                                                            <th>Product Name</th>
+                                                            <th>Product Type</th>
+                                                            <th>Cost / Pc</th>
+                                                            <th>Quantity</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script>
+            $(document).ready(function() {
+                const state = {
+                    stocks: [],
+                    products: [],
+                    stockTable: {},
+                    logs: {
+                        id: session._id,
+                        userNo: session.userNo,
+                        name: `${session.firstname} ${session.lastname}`
+                    }
+                };
+
+                getStocks();
+                getProducts();
+
+                async function getStocks() {
+                    loadingDialog.open();
+
+                    try {
+                        const stocks = await $.get({ url: '/api/stock' });
+                        state.stocks = stocks;
+
+                        loadtable();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function getProducts() {
+                    loadingDialog.open();
+
+                    try {
+                        const products = await $.get({ url: '/api/product/admin' });
+                        state.products = products;
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function createStocks(stocks) {
+                    try {
+                        loadingDialog.open();
+
+                        const data = {
+                            data: { stocks },
+                            logs: {
+                                ...state.logs,
+                                activity: `Created Stock `,
+                                dateCreated: new Date()
+                            }
+                        };
+
+                        const result = await $.post({ url: '/api/stock', data: JSON.stringify(data), contentType: 'application/json' });
+                        state.stocks = state.stocks.concat(result);
+
+                        setTimeout(() => {
+                            successDialog('Stock successfully created.');
+                            $('#back-table-btn2').trigger('click');
+
+                            loadtable();
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                function loadtable() {
+                    state.stockTable = $('#stock-table').DataTable({
+                        destroy: true,
+                        data: state.stocks,
+                        dom: 'rtip',
+                        scrollX: true,
+                        autoWidth: true,
+                        columns: [
+                            //
+                            { data: 'stockNo', title: 'Stock #', width: 70 },
+                            { data: 'productNo', title: 'Product #', width: 70 },
+                            { data: 'title', title: 'Product Name' },
+                            { data: 'type', title: 'Type', width: 100 },
+                            { data: 'cost', title: 'Cost', width: 70, render: (data, type, row, meta) => `₱${numWithCommas(data.toFixed(2))}` },
+                            {
+                                data: 'status',
+                                title: 'Status',
+                                render: (data, type, row, meta) => {
+                                    if (row.remainingStock <= 0) return '<b class="text-danger">Sold Out</b>';
+                                    return data === 'stock' ? '<b class="text-muted">In Stock</b>' : '<b class="text-primary">In Shop</b>';
+                                }
+                            },
+                            { data: 'stock', title: 'Stock', width: 50, render: (data, type, row, meta) => numWithCommas(data) },
+                            { data: 'remainingStock', title: 'Remaining Stock', width: 50, render: (data, type, row, meta) => numWithCommas(data) },
+                            { data: 'dateCreated', title: 'Date Received', width: 70, render: (data, type, row, meta) => moment(data).format('YYYY-MMM-DD hh:mm A') },
+                            {
+                                data: 'createdBy',
+                                title: 'Created By',
+                                render: (data, type, row, meta) => {
+                                    if (row.createdBy) return `${row.createdBy.firstname} ${row.createdBy.lastname}`;
+                                    else return '<span class="text-danger font-weight-bolder">X</span>';
+                                }
+                            }
+                        ],
+
+                        columnDefs: [
+                            {
+                                targets: '_all',
+                                render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">X</span>'
+                            }
+                        ],
+
+                        rowCallback: (row, data, iDataIndex) => {
+                            $(row).attr('id', data._id);
+                        }
+                    });
+
+                    if (session.role === 'staff') state.stockTable.column(9).visible(false);
+                }
+
+                $('body').on('click', '#add-mode-btn', function() {
+                    getProducts();
+
+                    $('#table-card').hide();
+                    $('#edit-card').hide();
+                    $('#add-card').show();
+
+                    $('#add-card input, #add-card textarea, #add-card select').val('');
+
+                    $('#add-stock-table tbody').empty();
+                    stockRow();
+                });
+
+                $('body').on('click', '#add-row-btn', function() {
+                    if ($('#add-stock-table tbody tr').length >= 10) return warningDialog('10 Stock rows only.');
+                    stockRow();
+                });
+
+                function stockRow() {
+                    const products = state.products;
+
+                    $('#add-stock-table tbody').append(`<tr>
+                        <td>
+                            <select class="form-control" name="product">
+                                <option selected disabled> - Select - </option>
+                                ${products.map(p => `<option value="${p._id}">${p.productNo} - ${p.title}</option>`)}
+                            </select>
+                        </td>
+                        <td><input class="form-control" name="productNo" type="text" placeholder="Product #" readonly /></td>
+                        <td><input class="form-control" name="title" type="text" placeholder="Product Name" readonly /></td>
+                        <td>
+                            <select class="form-control" name="type" readonly>
+                                <option value="" disabled selected> - Select - </option>
+                                <option>Mountain Bike</option>
+                                <option>Road Bike</option>
+                                <option>BMX</option>
+                                <option>Parts</option>
+                            </select>
+                        </td>
+                        <td><input class="form-control" name="cost" type="number" placeholder="Cost / Pc" /></td>
+                        <td><input class="form-control" name="stock" type="number" placeholder="Quantity" /></td>
+                    </tr>`);
+                }
+
+                $('body').on('change', '#add-stock-form select[name="product"]', function() {
+                    const id = $(this).val();
+                    const product = state.products.find(s => s._id === id);
+
+                    const { productNo, title, description, type } = product;
+
+                    const row = $(this)
+                        .parent()
+                        .parent();
+
+                    row.find('input[name="productNo"]').val(productNo);
+                    row.find('input[name="title"]').val(title);
+                    row.find('textarea[name="description"]').val(description);
+                    row.find('select[name="type"]').val(type);
+                });
+
+                $('body').on('click', '#add-stock-btn', function() {
+                    let isValid = true;
+                    let stocks = [];
+
+                    $('#add-stock-form tbody tr').each(function() {
+                        const productForm = $(this).find('[name="product"]');
+                        const productNoForm = $(this).find('[name="productNo"]');
+                        const titleForm = $(this).find('[name="title"]');
+                        const typeForm = $(this).find('[name="type"]');
+                        const costForm = $(this).find('[name="cost"]');
+                        const stockForm = $(this).find('[name="stock"]');
+
+                        const product = productForm.val();
+                        const productNo = productNoForm.val();
+                        const title = titleForm.val();
+                        const type = typeForm.val();
+                        const cost = costForm.val();
+                        const stock = stockForm.val();
+
+                        $(this)
+                            .find('input, select')
+                            .removeClass('is-invalid');
+
+                        if (!product || !cost || !stock) isValid = false;
+
+                        if (!product) productForm.addClass('is-invalid');
+                        if (!cost) costForm.addClass('is-invalid');
+                        if (!stock) stockForm.addClass('is-invalid');
+
+                        stocks.push({
+                            product,
+                            productNo,
+                            title,
+                            type,
+                            cost,
+                            stock,
+                            sellingPrice: (parseFloat(cost) + parseFloat(cost) * 0.02).toFixed(2),
+                            remainingStock: stock,
+                            createdBy: session._id
+                        });
+                    });
+
+                    if (!isValid) return warningDialog('Please fill up highlighted fields.');
+
+                    createStocks(stocks);
+                });
+
+                $('body').on('click', '#back-table-btn, #back-table-btn2', function() {
+                    $('#table-card').show();
+                    $('#edit-card').hide();
+                    $('#add-card').hide();
+                });
+
+                $('body').on('keyup', '#filter-stock', function() {
+                    state.stockTable.search($(this).val()).draw();
+                });
+            });
+        </script>
+    </body>
+</html>

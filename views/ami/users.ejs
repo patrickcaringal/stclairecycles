@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row h-100">
+                        <div class="col-lg-12" id="table-card">
+                            <div class="card">
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <input class="form-control" id="filter-user" type="text" placeholder="Search" />
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <button id="add-mode-btn" class="btn btn-info btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-plus" aria-hidden="true"></i> Add User</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-lg-12">
+                                            <div class="table-responsive">
+                                                <table id="user-table" class="table table-bordered animated fadeIn" style="width: 100%;"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 edit-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Update user</strong>
+                                    <button id="update-user-btn" class="btn btn-info btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-pencil" aria-hidden="true"></i> Save Changes</button>
+                                    <button id="back-table-btn" class="btn btn-info btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="update-user-form">
+                                        <div class="row mt-3">
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Staff #</label>
+                                                    <input class="form-control" name="userNo" type="text" placeholder="User #" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">First name</label>
+                                                    <input class="form-control" name="firstname" type="text" placeholder="First name" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">Last name</label>
+                                                    <input class="form-control" name="lastname" type="text" placeholder="Last name" disabled />
+                                                </div>
+                                            </div>
+                                            <!-- <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Role</label>
+                                                    <select class="form-control" name="role">
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option value="admin">Admin</option>
+                                                        <option value="staff">Staff</option>
+                                                    </select>
+                                                </div>
+                                            </div> -->
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Email</label>
+                                                    <input class="form-control" name="email" type="text" placeholder="Email" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Contact no.</label>
+                                                    <input class="form-control" name="contactNo" type="text" placeholder="Contact no." disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Active</label>
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="customCheck2" name="status" />
+                                                        <label class="custom-control-label" for="customCheck2">Check if Yes</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 add-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Add Staff</strong>
+                                    <button id="add-user-btn" class="btn btn-info btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-plus" aria-hidden="true"></i> Save Staff</button>
+                                    <button id="back-table-btn2" class="btn btn-info btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="add-user-form">
+                                        <div class="row mt-3">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">First name</label>
+                                                    <input class="form-control" name="firstname" type="text" placeholder="First name" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">Last name</label>
+                                                    <input class="form-control" name="lastname" type="text" placeholder="Last name" />
+                                                </div>
+                                            </div>
+                                            <!-- <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Role</label>
+                                                    <select class="form-control" name="role">
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option value="admin">Admin</option>
+                                                        <option value="staff">Staff</option>
+                                                    </select>
+                                                </div>
+                                            </div> -->
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Email</label>
+                                                    <input class="form-control" name="email" type="text" placeholder="Email" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Contact no.</label>
+                                                    <input class="form-control" name="contactNo" type="text" placeholder="Contact no." />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script>
+            $(document).ready(function() {
+                const state = {
+                    users: [],
+                    userTable: {},
+                    updatUser: {},
+                    logs: {
+                        id: session._id,
+                        userNo: session.userNo,
+                        name: `${session.firstname} ${session.lastname}`
+                    }
+                };
+
+                getUsers();
+
+                async function getUsers() {
+                    loadingDialog.open();
+
+                    try {
+                        const users = await $.get({ url: '/api/user' });
+                        state.users = users.filter(i => i.role != 'admin');
+
+                        loadtable();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function createUser(user) {
+                    loadingDialog.open();
+
+                    try {
+                        const data = {
+                            data: user,
+                            logs: {
+                                ...state.logs,
+                                activity: `Created Staff `,
+                                dateCreated: new Date()
+                            }
+                        };
+
+                        const result = await $.post({ url: '/api/user', data: JSON.stringify(data), contentType: 'application/json' });
+                        state.users.push(result);
+
+                        setTimeout(() => {
+                            successDialog('Staff successfully created.');
+                            $('#back-table-btn2').trigger('click');
+
+                            loadtable();
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function updateUser() {
+                    loadingDialog.open();
+
+                    try {
+                        // const user = $('#update-user-form').serializeObject();
+                        const user = {
+                            isActive: $('#update-user-form [name="status"]').is(':checked')
+                        };
+
+                        const data = {
+                            data: user,
+                            logs: {
+                                ...state.logs,
+                                activity: `Updated Staff ${state.updatUser.userNo}`,
+                                dateCreated: new Date()
+                            }
+                        };
+
+                        let result = await $.ajax({ method: 'PUT', url: `/api/user/${state.updatUser._id}`, data: JSON.stringify(data), contentType: 'application/json' });
+
+                        const index = state.users.findIndex(p => p._id === result._id);
+                        state.users[index] = { ...result };
+
+                        setTimeout(() => {
+                            successDialog('User successfully updated.');
+                            $('#back-table-btn').trigger('click');
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                // Add
+                $('body').on('click', '#add-mode-btn', function() {
+                    $('#table-card').hide();
+                    $('.edit-card').hide();
+                    $('.add-card').show();
+
+                    $('.add-card input, .add-card textarea, .add-card select').val('');
+                    $('.add-card .media-preview').empty();
+                });
+
+                $('body').on('click', '#add-user-btn', function() {
+                    let user = $('#add-user-form').serializeObject();
+
+                    if (!user.firstname.trim()) return warningDialog('First Name is required.');
+                    if (!user.lastname.trim()) return warningDialog('Last Name is required.');
+                    if (!user.email.trim()) return warningDialog('Email is required.');
+                    if (!isValidEmail(user.email.trim())) return warningDialog('Invalid Email.');
+                    if (!user.contactNo) return warningDialog('Contact No is required.');
+                    if (/^\d{10}$/.test(user.contactNo)) return warningDialog('Invalid Contact No.');
+
+                    user = {
+                        ...user,
+                        role: 'staff',
+                        email: user.email.trim(),
+                        password: 'pass'
+                    };
+
+                    createUser(user);
+                });
+
+                //  Edit
+                $('body').on('click', '#update-user-btn', function() {
+                    updateUser();
+                });
+
+                $('body').on('click', '#back-table-btn, #back-table-btn2', function() {
+                    $('#table-card').show();
+                    $('.edit-card').hide();
+                    $('.add-card').hide();
+
+                    loadtable();
+                });
+
+                $('body').on('keyup', '#filter-user', function() {
+                    state.userTable.search($(this).val()).draw();
+                });
+
+                function loadtable() {
+                    state.userTable = $('#user-table').DataTable({
+                        destroy: true,
+                        data: state.users,
+                        dom: 'rtip',
+                        scrollX: true,
+                        columns: [
+                            //
+                            { data: 'userNo', title: 'Staff #' },
+                            { data: 'firstname', title: 'Staff name', render: (data, type, row, meta) => `${row.firstname} ${row.lastname}` },
+                            { data: 'role', title: 'Role', render: (data, type, row, meta) => data.toUpperCase() },
+                            { data: 'email', title: 'Email' },
+                            { data: 'contactNo', title: 'Contact #' },
+                            { data: 'isActive', title: 'Status', render: (data, type, row, meta) => (data ? '<b class="text-success">Active</b>' : '<b class="text-danger">Not Active</b>') },
+                            {
+                                data: null,
+                                title: 'Action',
+                                className: 'dt-center',
+                                render: (data, type, row, meta) => {
+                                    return `<button class="btn btn-sm btn-pill btn-info active edit-btn" type="button" aria-pressed="true"><i class="fa fa-pencil" aria-hidden="true"></i></button>`;
+                                }
+                            }
+                        ],
+
+                        columnDefs: [
+                            {
+                                targets: '_all',
+                                render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">X</span>'
+                            }
+                        ],
+
+                        rowCallback: (row, data, iDataIndex) => {
+                            $(row).attr('id', data._id);
+
+                            $(row)
+                                .find('.edit-btn')
+                                .on('click', function() {
+                                    state.updatUser = data;
+                                    updateMode();
+                                });
+                        }
+                    });
+
+                    function updateMode() {
+                        $('#table-card').hide();
+                        $('.edit-card').show();
+                        $('.add-card').hide();
+
+                        $('.edit-card input, .edit-card textarea, .edit-card select').val('');
+
+                        const { userNo, firstname, lastname, email, contactNo, isActive } = state.updatUser;
+
+                        $('.edit-card [name="userNo"]').val(userNo);
+                        $('.edit-card [name="firstname"]').val(firstname);
+                        $('.edit-card [name="lastname"]').val(lastname);
+                        $('.edit-card [name="email"]').val(email);
+                        $('.edit-card [name="contactNo"]').val(contactNo);
+                        $('.edit-card input[name="status"]').prop('checked', isActive === true);
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row h-100">
+                        <div class="col-lg-6 view-card">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Account</strong>
+                                    <button id="update-pass-mode-btn" class="btn btn-info btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-lock" aria-hidden="true"></i> Update Password</button>
+                                    <button id="update-mode-btn" class="btn btn-info btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-pencil" aria-hidden="true"></i> Update Account</button>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row">
+                                        <dt class="col-sm-3">Staff # :</dt>
+                                        <dd class="col-sm-9 detail-userNo"></dd>
+
+                                        <dt class="col-sm-3">Staff Name # :</dt>
+                                        <dd class="col-sm-9 detail-name"></dd>
+
+                                        <dt class="col-sm-3">Position :</dt>
+                                        <dd class="col-sm-9 detail-role"></dd>
+
+                                        <dt class="col-sm-3">Email :</dt>
+                                        <dd class="col-sm-9 detail-email"></dd>
+
+                                        <dt class="col-sm-3">Contact no. :</dt>
+                                        <dd class="col-sm-9 detail-contactNo"></dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 edit-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Update Account</strong>
+                                    <button id="update-user-btn" class="btn btn-info btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Changes</button>
+                                    <button id="back-table-btn" class="btn btn-info btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="update-user-form">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Staff #</label>
+                                                    <input class="form-control" name="userNo" type="text" placeholder="User #" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">First name</label>
+                                                    <input class="form-control" name="firstname" type="text" placeholder="First name" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">Last name</label>
+                                                    <input class="form-control" name="lastname" type="text" placeholder="Last name" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Position</label>
+                                                    <input class="form-control" name="role" type="text" placeholder="Position" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Email</label>
+                                                    <input class="form-control" name="email" type="text" placeholder="Email" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Contact no.</label>
+                                                    <input class="form-control" name="contactNo" type="text" placeholder="Contact no." />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 edit-pass-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Update Password</strong>
+                                    <button id="update-password-btn" class="btn btn-info btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Changes</button>
+                                    <button id="back-table-btn" class="btn btn-info btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="password-form">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Current Password</label>
+                                                    <input class="form-control" name="oldPassword" type="password" placeholder="Current Password" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">New Password</label>
+                                                    <input class="form-control" name="password" type="password" placeholder="New Password" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <label for="name">Re-Type Password</label>
+                                                    <input class="form-control" name="password2" type="password" placeholder="Re-Type Password" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script>
+            $(document).ready(function() {
+                const state = {
+                    user: {},
+                    logs: {
+                        id: session._id,
+                        userNo: session.userNo,
+                        name: `${session.firstname} ${session.lastname}`
+                    }
+                };
+
+                getUser();
+
+                async function getUser() {
+                    loadingDialog.open();
+
+                    try {
+                        const user = await $.get({ url: `/api/user/${session._id}` });
+                        state.user = user;
+
+                        // setTimeout(() => {
+                        //     $('#update-pass-mode-btn').trigger('click');
+                        // }, 1000);
+                        accountView();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function updateUser() {
+                    loadingDialog.open();
+
+                    try {
+                        const user = $('#update-user-form').serializeObject();
+
+                        const data = {
+                            data: { ...user },
+                            logs: {
+                                ...state.logs,
+                                activity: 'Updated account details',
+                                dateCreated: new Date()
+                            }
+                        };
+
+                        let result = await $.ajax({ method: 'PUT', url: `/api/user/${session._id}`, data: JSON.stringify(data), contentType: 'application/json' });
+
+                        state.user = result;
+                        localStorage.setItem('account_admin', JSON.stringify(result));
+
+                        setTimeout(() => {
+                            accountView();
+                            setSession(JSON.parse(localStorage.getItem('account_admin')));
+                            successDialog('Account successfully updated.');
+                            $('#back-table-btn').trigger('click');
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function updatePassword(password) {
+                    loadingDialog.open();
+
+                    try {
+                        const data = {
+                            data: { password },
+                            logs: {
+                                ...state.logs,
+                                activity: 'Updated password',
+                                dateCreated: new Date()
+                            }
+                        };
+
+                        let result = await $.ajax({ method: 'PUT', url: `/api/user/${session._id}`, data: JSON.stringify(data), contentType: 'application/json' });
+
+                        state.user = result;
+                        localStorage.setItem('account_admin', JSON.stringify(result));
+
+                        setTimeout(() => {
+                            accountView();
+                            setSession(JSON.parse(localStorage.getItem('account_admin')));
+                            successDialog('Password successfully updated.');
+                            $('#back-table-btn').trigger('click');
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                // Edit Account
+                $('body').on('click', '#update-mode-btn', function() {
+                    updateMode();
+                });
+
+                $('body').on('click', '#update-user-btn', function() {
+                    let user = $('#update-user-form').serializeObject();
+
+                    if (!user.firstname.trim()) return warningDialog('First Name is required.');
+                    if (!user.lastname.trim()) return warningDialog('Last Name is required.');
+                    if (!user.email.trim()) return warningDialog('Email is required.');
+                    if (!isValidEmail(user.email.trim())) return warningDialog('Invalid Email.');
+                    if (!user.contactNo) return warningDialog('Contact No is required.');
+                    // if (/^\d{11}$/.test(user.contactNo)) return warningDialog('Invalid Contact No.');
+
+                    updateUser();
+                });
+
+                // Edit Pass
+                $('body').on('click', '#update-pass-mode-btn', function() {
+                    $('.view-card').hide();
+                    $('.edit-card').hide();
+                    $('.edit-pass-card').show();
+
+                    $('.edit-pass-card input').val('');
+                });
+
+                $('body').on('click', '#update-password-btn', function() {
+                    let pass = $('#password-form').serializeObject();
+                    const { oldPassword, password, password2 } = pass;
+
+                    if (!oldPassword) return warningDialog('Please enter Current Password.');
+                    if (!password) return warningDialog('Please enter New Password.');
+                    if (password.length < 8) return warningDialog('Password should be above 8 characters.');
+                    if (!password2) return warningDialog('Please Re-type New Password.');
+                    if (password !== password2) return warningDialog('Password not match.');
+
+                    if (oldPassword !== JSON.parse(localStorage.getItem('account_admin')).password) return warningDialog('Current Password Incorrect.');
+
+                    updatePassword(password);
+                });
+
+                $('body').on('click', '#back-table-btn', function() {
+                    $('.view-card').show();
+                    $('.edit-card').hide();
+                    $('.edit-pass-card').hide();
+                });
+
+                function accountView() {
+                    const { userNo, firstname, lastname, role, email, contactNo } = state.user;
+
+                    $('.detail-userNo').html(userNo);
+                    $('.detail-name').html(`${firstname} ${lastname}`);
+                    $('.detail-role').html(role);
+                    $('.detail-email').html(email);
+                    $('.detail-contactNo').html(contactNo);
+                }
+
+                function updateMode() {
+                    $('.view-card').hide();
+                    $('.edit-card').show();
+                    $('.edit-pass-card').hide();
+
+                    $('.edit-card input, .edit-card textarea, .edit-card select').val('');
+
+                    const { userNo, firstname, lastname, role, email, contactNo } = state.user;
+
+                    $('.edit-card [name="userNo"]').val(userNo);
+                    $('.edit-card [name="firstname"]').val(firstname);
+                    $('.edit-card [name="lastname"]').val(lastname);
+                    $('.edit-card [name="role"]').val(role);
+                    $('.edit-card [name="email"]').val(email);
+                    $('.edit-card [name="contactNo"]').val(contactNo);
+                }
+
+                return;
+
+                // getUsers();
+
+                // async function getUsers() {
+                //     loadingDialog.open();
+
+                //     try {
+                //         const users = await $.get({ url: '/api/user' });
+                //         state.users = users;
+                //         // console.log(JSON.stringify(users, '', 4));
+                //         loadtable();
+                //         // setTimeout(() => {
+                //         //     $('button.edit-btn:eq(0)').trigger('click');
+                //         //     $('#add-mode-btn').trigger('click');
+                //         // }, 500);
+                //     } catch (error) {
+                //         console.log(error);
+                //         if (error.responseText) return errorDialog(error.responseText);
+                //         else return errorDialog('Something went wrong.');
+                //     } finally {
+                //         loadingDialogClose();
+                //     }
+                // }
+
+                // async function createUser(user) {
+                //     loadingDialog.open();
+
+                //     try {
+                //         const result = await $.post({ url: '/api/user', data: JSON.stringify(user), contentType: 'application/json' });
+                //         state.users.push(result);
+
+                //         setTimeout(() => {
+                //             successDialog('User successfully created.');
+                //             $('#back-table-btn2').trigger('click');
+
+                //             loadtable();
+                //         }, 1000);
+                //     } catch (error) {
+                //         console.log(error);
+                //         if (error.responseText) return errorDialog(error.responseText);
+                //         else return errorDialog('Something went wrong.');
+                //     } finally {
+                //         loadingDialogClose();
+                //     }
+                // }
+
+                // async function updateUser() {
+                //     loadingDialog.open();
+
+                //     try {
+                //         const user = $('#update-user-form').serializeObject();
+                //         delete user['userNo'];
+
+                //         let result = await $.ajax({ method: 'PUT', url: `/api/user/${state.updatUser._id}`, data: JSON.stringify(user), contentType: 'application/json' });
+
+                //         const index = state.users.findIndex(p => p._id === result._id);
+                //         state.users[index] = { ...result };
+
+                //         setTimeout(() => {
+                //             successDialog('User successfully updated.');
+                //             $('#back-table-btn').trigger('click');
+                //         }, 1000);
+                //     } catch (error) {
+                //         console.log(error);
+                //         if (error.responseText) return errorDialog(error.responseText);
+                //         else return errorDialog('Something went wrong.');
+                //     } finally {
+                //         loadingDialogClose();
+                //     }
+                // }
+
+                // // Add
+                // $('body').on('click', '#add-mode-btn', function() {
+                //     $('#table-card').hide();
+                //     $('.edit-card').hide();
+                //     $('.add-card').show();
+
+                //     $('.add-card input, .add-card textarea, .add-card select').val('');
+                //     $('.add-card .media-preview').empty();
+                // });
+
+                // $('body').on('click', '#add-user-btn', function() {
+                //     let user = $('#add-user-form').serializeObject();
+
+                //     if (!user.firstname.trim()) return warningDialog('First Name is required.');
+                //     if (!user.lastname.trim()) return warningDialog('Last Name is required.');
+                //     if (!user.role.trim()) return warningDialog('Position is required.');
+                //     if (!user.email.trim()) return warningDialog('Email is required.');
+                //     if (!isValidEmail(user.email.trim())) return warningDialog('Invalid Email.');
+                //     if (!user.contactNo) return warningDialog('Contact No is required.');
+                //     if (/^\d{10}$/.test(user.contactNo)) return warningDialog('Invalid Contact No.');
+
+                //     user.email = user.email.trim();
+                //     user.password = 'pass';
+
+                //     createUser(user);
+                // });
+
+                // //  Edit
+                // $('body').on('click', '#update-user-btn', function() {
+                //     updateUser();
+                // });
+
+                // $('body').on('keyup', '#filter-user', function() {
+                //     state.userTable.search($(this).val()).draw();
+                // });
+
+                // function loadtable() {
+                //     state.userTable = $('#user-table').DataTable({
+                //         destroy: true,
+                //         data: state.users,
+                //         dom: 'rtip',
+                //         scrollX: true,
+                //         columns: [
+                //             //
+                //             { data: 'userNo', title: 'Staff #' },
+                //             { data: 'firstname', title: 'Staff name' },
+                //             { data: 'role', title: 'Position' },
+                //             { data: 'email', title: 'Email' },
+                //             { data: 'contactNo', title: 'Contact #' },
+                //             {
+                //                 data: null,
+                //                 title: 'Action',
+                //                 render: (data, type, row, meta) => {
+                //                     return `<button class="btn btn-sm btn-pill btn-info active edit-btn" type="button" aria-pressed="true"><i class="fa fa-pencil" aria-hidden="true"></i></button>`;
+                //                 }
+                //             }
+                //         ],
+
+                //         columnDefs: [
+                //             {
+                //                 targets: [5],
+                //                 className: 'dt-center'
+                //             },
+                //             {
+                //                 targets: [1],
+                //                 render: (data, type, row, meta) => `${row.firstname} ${row.lastname}`
+                //             },
+                //             {
+                //                 targets: '_all',
+                //                 render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">X</span>'
+                //             }
+                //         ],
+
+                //         rowCallback: (row, data, iDataIndex) => {
+                //             $(row).attr('id', data._id);
+
+                //             $(row)
+                //                 .find('.edit-btn')
+                //                 .on('click', function() {
+                //                     state.updatUser = data;
+                //                     updateMode();
+                //                 });
+
+                //             // $(row)
+                //             //     .find('.delete-btn')
+                //             //     .off('click')
+                //             //     .on('click', function() {
+                //             //         if (confirm(`Are you sure you want to delete ${data.firstName} ${data.lastName}`)) {
+                //             //             state.deleteId = data._id;
+                //             //             deleteUser();
+                //             //         }
+                //             //     });
+                //         }
+                //     });
+
+                //     function updateMode() {
+                //         $('#table-card').hide();
+                //         $('.edit-card').show();
+                //         $('.add-card').hide();
+
+                //         $('.edit-card input, .edit-card textarea, .edit-card select').val('');
+
+                //         const { userNo, firstname, lastname, role, email, contactNo } = state.updatUser;
+
+                //         $('.edit-card [name="userNo"]').val(userNo);
+                //         $('.edit-card [name="firstname"]').val(firstname);
+                //         $('.edit-card [name="lastname"]').val(lastname);
+                //         $('.edit-card [name="role"]').val(role);
+                //         $('.edit-card [name="email"]').val(email);
+                //         $('.edit-card [name="contactNo"]').val(contactNo);
+                //     }
+                // }
+            });
+        </script>
+    </body>
+</html>

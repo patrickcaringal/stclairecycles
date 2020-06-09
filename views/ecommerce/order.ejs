@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+    <% include ./partials/head.ejs %>
+    <style>
+        .order-list {
+            display: block;
+            position: relative;
+            box-shadow: none;
+            padding: 0;
+            width: 100%;
+        }
+        .order-list {
+            z-index: 0 !important;
+        }
+    </style>
+    <body>
+        <div class="wrapper">
+            <% include ./partials/navbar.ejs %>
+            <div class="login-register-area ptb-130">
+                <div class="container">
+                    <input type="hidden" id="isLoggedIn" value="<%= locals.isLoggedIn %>" />
+                    <input type="hidden" id="orderId" value="<%= locals.id %>" />
+                    <input type="text" id="refresh-page" value="no" class="d-none" />
+
+                    <div class="row mt-5">
+                        <div class="col-lg-5 ml-auto mr-auto">
+                            <div class="login-form-container py-5 px-4">
+                                <form id="product-details"></form>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 ml-auto mr-auto">
+                            <div class="login-form-container p-5">
+                                <div class="shopping-cart-content order-list">
+                                    <ul id="order-list"></ul>
+
+                                    <div class="shopping-cart-total">
+                                        <!-- <h4>total: <span id="order-total">₱0.00</span></h4> -->
+                                        <h4>subtotal: <span id="order-subtotal">₱0.00</span></h4>
+                                        <h4>tax<small id="tax-value">(0%)</small>: <span id="tax-total">₱0.00</span></h4>
+                                        <h4>shipping fee <small>(free shipping orders above ₱5,000.00)</small>: <span id="shipping-total">₱0.00</span></h4>
+                                        <h4 class="mt-3">total: <span id="order-total" style="font-weight: bolder;">₱0.00</span></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% include ./partials/footer.ejs %>
+        </div>
+
+        <% include ./partials/script.ejs %>
+        <script>
+            loadingDialog.open();
+
+            $(document).ready(function() {
+                const state = {
+                    order: {}
+                };
+
+                getOrder();
+
+                async function getOrder() {
+                    try {
+                        const orderId = $('#orderId').val();
+                        const order = await $.get({ url: `/api/order/${orderId}` });
+                        state.order = order;
+                        productDetails();
+                        orderList();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                function productDetails() {
+                    let {
+                        orderNo,
+                        orderCount,
+                        dateCreated,
+                        card,
+                        last4,
+                        status,
+                        shipTo: { address }
+                    } = state.order;
+
+                    if (status === 'succeeded') status = 'To Ship';
+                    else if (status === 'shipping') status = 'To Receive';
+                    else if (status === 'delivered') status = 'Delivered';
+
+                    // <div class="row">
+                    //     <label for="staticEmail" class="col-sm-5 col-form-label text-right font-weight-bold">Payment Type :</label>
+                    //     <label for="staticEmail" class="col-sm-7 col-form-label">${card == 'Visa' ? `<i class="fa fa-cc-visa mr-2" aria-hidden="true"></i> ****${last4}` : `Others ****${last4}`}</label>
+                    // </div>
+                    const code = `<div class="row">
+                        <label for="staticEmail" class="col-sm-5 col-form-label text-right font-weight-bold">Order # :</label>
+                        <label for="staticEmail" class="col-sm-7 col-form-label">${orderNo}</label>
+                    </div>
+                    <div class="row">
+                        <label for="staticEmail" class="col-sm-5 col-form-label text-right font-weight-bold">Items :</label>
+                        <label for="staticEmail" class="col-sm-7 col-form-label">${orderCount}</label>
+                    </div>
+                    <div class="row">
+                        <label for="staticEmail" class="col-sm-5 col-form-label text-right font-weight-bold">Date Ordered :</label>
+                        <label for="staticEmail" class="col-sm-7 col-form-label">${moment(dateCreated).format('YYYY-MMM-DD hh:ss A')}</label>
+                    </div>
+                    <div class="row">
+                        <label for="staticEmail" class="col-sm-5 col-form-label text-right font-weight-bold">Status :</label>
+                        <label for="staticEmail" class="col-sm-7 col-form-label">${status}</label>
+                    </div>
+                    <div class="row">
+                        <label for="staticEmail" class="col-sm-5 col-form-label text-right font-weight-bold">Ship to Address :</label>
+                        <label for="staticEmail" class="col-sm-7 col-form-label">${address}</label>
+                    </div>`;
+
+                    $('#product-details').html(code);
+                }
+
+                function orderList() {
+                    const { orders, tax = 0, subtotal = 0, taxAmount = 0, shippingFee = 0, total = 0 } = state.order;
+
+                    const code = orders.map(order => {
+                        let {
+                            product: { title, image },
+                            price,
+                            quantity,
+                            total
+                        } = order;
+
+                        image = image ? `../${image}` : '../ecommerce/img/product-details/l1.jpg';
+
+                        return `<li class="single-shopping-cart">
+                            <div class="shopping-cart-img">
+                                <a href="#"><img alt="" src="${image}" style="width: 80px; height: auto;" /></a>
+                            </div>
+                            <div class="shopping-cart-title" style="width: 80% !important;">
+                                <h3 class="text-truncate"><a href="#">${title}</a></h3>
+                                <span>Price: ₱${numWithCommas(price.toFixed(2))}</span>
+                                <span>Qty: ${quantity}</span>
+                                <span>Total: ₱${numWithCommas(total.toFixed(2))}</span>
+                            </div>
+                        </li>`;
+                    });
+
+                    // const subtotalAmount = Number(total);
+                    // const taxTotal = Number(subtotalAmount) * 0.05;
+                    // const shippingFee = subtotalAmount < 5000 ? 1 : 0;
+                    // const totalAmount = Number(subtotalAmount) + Number(taxTotal) + Number(shippingFee);
+
+                    $('#order-list').html(code);
+                    $('#tax-value').text(`(${tax}%)`);
+                    $('#order-subtotal').html(`₱${numWithCommas(subtotal.toFixed(2))}`);
+                    $('#tax-total').html(`₱${numWithCommas(taxAmount.toFixed(2))}`);
+                    $('#shipping-total').html(`₱${numWithCommas(shippingFee.toFixed(2))}`);
+                    $('#order-total').html(`₱${numWithCommas(total.toFixed(2))}`);
+                }
+            });
+        </script>
+    </body>
+</html>

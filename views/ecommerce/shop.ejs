@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+    <% include ./partials/head.ejs %>
+    <body>
+        <div class="wrapper">
+            <% include ./partials/navbar.ejs %>
+            <div class="shop-wrapper fluid-padding-2 pt-120 pb-150">
+                <div class="container-fluid mt-5">
+                    <input type="hidden" id="isLoggedIn" value="<%= locals.isLoggedIn %>" />
+                    <input type="text" id="refresh-page" value="no" class="d-none" />
+
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="product-sidebar-area pr-60">
+                                <div class="sidebar-widget pb-55">
+                                    <h3 class="sidebar-widget">Search Products</h3>
+                                    <div class="sidebar-search">
+                                        <form action="#">
+                                            <input type="text" id="search-text" placeholder="Search Products..." />
+                                            <button id="search-btn" type="button"><i class="ti-search"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="sidebar-widget pb-50">
+                                    <h3 class="sidebar-widget">by categories</h3>
+                                    <div class="widget-categories">
+                                        <ul>
+                                            <li><a href="#" data-type="" class="text-warning font-weight-bold">All</a></li>
+                                            <li><a href="#" data-type="Mountain Bike">Mountain Bike</a></li>
+                                            <li><a href="#" data-type="Road Bike">Road Bike</a></li>
+                                            <li><a href="#" data-type="BMX">BMX</a></li>
+                                            <li><a href="#" data-type="Parts">Parts</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="sidebar-widget mb-55">
+                                    <h3 class="sidebar-widget">best seller</h3>
+                                    <div class="best-seller bestseller-list">
+                                        <!-- <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-12.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Minimal White Shoes</a></h3>
+                                                <span>$39.9</span>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                </div>
+
+                                <div class="sidebar-widget mb-55">
+                                    <h3 class="sidebar-widget">New Products</h3>
+                                    <div class="best-seller new-prod-list">
+                                        <!-- <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-12.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Minimal White Shoes</a></h3>
+                                                <span>$39.9</span>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="grid-list-product-wrapper tab-content">
+                                <div class="product-grid product-view tab-pane active">
+                                    <div class="row" id="products-gallery">
+                                        <!-- <div class="product-width col-md-6 col-xl-4 col-lg-6">
+                                            <div class="product-wrapper mb-35">
+                                                <div class="product-img">
+                                                    <a href="product-details.html">
+                                                        <img src="../../ecommerce/img/product/product-1.jpg" alt="" />
+                                                    </a>
+                                                    <div class="product-action">
+                                                        <a class="action-plus-2 p-action-none" title="Add To Cart" href="#">
+                                                            <i class=" ti-shopping-cart"></i>
+                                                        </a>
+                                                        <a class="action-cart-2" title="Wishlist" href="#">
+                                                            <i class=" ti-heart"></i>
+                                                        </a>
+                                                        <a class="action-reload" title="Quick View" data-toggle="modal" data-target="#exampleModal" href="#">
+                                                            <i class=" ti-zoom-in"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="product-content-wrapper">
+                                                        <div class="product-title-spreed">
+                                                            <h4><a href="product-details.html">BMX Bike 1</a></h4>
+                                                            <span>BMX</span>
+                                                        </div>
+                                                        <div class="product-price">
+                                                            <span>₱ 7,500.00</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="product-list-details">
+                                                    <h2><a href="product-details.html">Gloriori GSX 250 R</a></h2>
+                                                    <div class="quick-view-rating">
+                                                        <i class="fa fa-star reting-color"></i>
+                                                        <i class="fa fa-star reting-color"></i>
+                                                        <i class="fa fa-star reting-color"></i>
+                                                        <i class="fa fa-star reting-color"></i>
+                                                        <i class="fa fa-star reting-color"></i>
+                                                    </div>
+                                                    <div class="product-price">
+                                                        <span>$2549</span>
+                                                    </div>
+                                                    <p>Lorem ipsum dolor sit amet, consectetur adipic it, sed do eiusmod tempor incididunt ut labore et dolore mag aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo it. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                                                    <div class="shop-list-cart">
+                                                        <a href="cart.html"><i class="ti-shopping-cart"></i> Add to cart</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- <div class="paginations text-center mt-20">
+                                <ul>
+                                    <li>
+                                        <a href="#"><i class="fa fa-angle-left"></i></a>
+                                    </li>
+                                    <li><a href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a href="#">3</a></li>
+                                    <li class="active">
+                                        <a href="#"><i class="fa fa-angle-right"></i></a>
+                                    </li>
+                                </ul>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% include ./partials/footer.ejs %>
+            <!-- modal -->
+            <!-- <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span class="icofont icofont-close" aria-hidden="true"></span>
+                </button>
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="qwick-view-left">
+                                <div class="quick-view-learg-img">
+                                    <div class="quick-view-tab-content tab-content">
+                                        <div class="tab-pane active show fade" id="modal1" role="tabpanel">
+                                            <img src="../../ecommerce/img/quick-view/l1.jpg" alt="" />
+                                        </div>
+                                        <div class="tab-pane fade" id="modal2" role="tabpanel">
+                                            <img src="../../ecommerce/img/quick-view/l2.jpg" alt="" />
+                                        </div>
+                                        <div class="tab-pane fade" id="modal3" role="tabpanel">
+                                            <img src="../../ecommerce/img/quick-view/l3.jpg" alt="" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="quick-view-list nav" role="tablist">
+                                    <a class="active" href="#modal1" data-toggle="tab" role="tab">
+                                        <img src="../../ecommerce/img/quick-view/s1.jpg" alt="" />
+                                    </a>
+                                    <a href="#modal2" data-toggle="tab" role="tab">
+                                        <img src="../../ecommerce/img/quick-view/s2.jpg" alt="" />
+                                    </a>
+                                    <a href="#modal3" data-toggle="tab" role="tab">
+                                        <img src="../../ecommerce/img/quick-view/s3.jpg" alt="" />
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="qwick-view-right">
+                                <div class="qwick-view-content">
+                                    <h3>Aeri Carbon Helmet</h3>
+                                    <div class="price">
+                                        <span class="new">$90.00</span>
+                                        <span class="old">$120.00 </span>
+                                    </div>
+                                    <div class="rating-number">
+                                        <div class="quick-view-rating">
+                                            <i class="fa fa-star reting-color"></i>
+                                            <i class="fa fa-star reting-color"></i>
+                                            <i class="fa fa-star reting-color"></i>
+                                            <i class="fa fa-star reting-color"></i>
+                                            <i class="fa fa-star reting-color"></i>
+                                        </div>
+                                    </div>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adip elit, sed do tempor incididun ut labore et dolore magna aliqua. Ut enim ad mi , quis nostrud veniam exercitation .</p>
+                                    <div class="quick-view-select">
+                                        <div class="select-option-part">
+                                            <label>Size*</label>
+                                            <select class="select">
+                                                <option value="">- Please Select -</option>
+                                                <option value="">900</option>
+                                                <option value="">700</option>
+                                            </select>
+                                        </div>
+                                        <div class="select-option-part">
+                                            <label>Color*</label>
+                                            <select class="select">
+                                                <option value="">- Please Select -</option>
+                                                <option value="">orange</option>
+                                                <option value="">pink</option>
+                                                <option value="">yellow</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="quickview-plus-minus">
+                                        <div class="cart-plus-minus">
+                                            <input type="text" value="02" name="qtybutton" class="cart-plus-minus-box" />
+                                        </div>
+                                        <div class="quickview-btn-cart">
+                                            <a class="btn-style" href="#">add to cart</a>
+                                        </div>
+                                        <div class="quickview-btn-wishlist">
+                                            <a class="btn-hover" href="#"><i class="icofont icofont-heart-alt"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+
+        <% include ./partials/script.ejs %>
+        <script>
+            loadingDialog.open();
+
+            $(document).ready(function() {
+                const state = {
+                    products: [],
+                    newProducts: [],
+                    bestSellers: []
+                };
+
+                getProducts();
+                getNewProducts();
+
+                async function getProducts(type, search) {
+                    try {
+                        let url = '/api/product';
+                        if (type && search) url = `${url}?type=${type}&search=${search}`;
+                        else {
+                            if (type) url = `${url}?type=${type}`;
+                            if (search) url = `${url}?search=${search}`;
+                        }
+
+                        const products = await $.get({ url });
+                        state.products = products;
+
+                        console.log(JSON.stringify(products, '', 4));
+                        productGallery();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function getNewProducts() {
+                    try {
+                        const newProducts = await $.get({ url: '/api/product/new' });
+                        const bestSellers = await $.get({ url: '/api/product/bestseller' });
+                        state.newProducts = newProducts;
+                        state.bestSellers = bestSellers;
+
+                        sideProducts();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                function productGallery() {
+                    const products = state.products.map(product => productCard(product));
+                    $('#products-gallery').html(products);
+
+                    $('.rateYo').rateYo();
+                }
+
+                function sideProducts() {
+                    const newProducts = state.newProducts.map(product => {
+                        let { _id, title, price, image } = product;
+
+                        image = image ? `../${image}` : '../ecommerce/img/product-details/l1.jpg';
+
+                        price = numWithCommas(price.toFixed(2));
+
+                        return `<div class="single-best-seller">
+                                        <div class="best-seller-img">
+                                            <a href="/product?id=${_id}"><img src="${image}" alt="no image" style="height: 100px; width: 100px;" /></a>
+                                        </div>
+                                        <div class="best-seller-text">
+                                            <h3><a href="#">${title}</a></h3>
+                                            <span>₱${price}</span>
+                                        </div>
+                                    </div>`;
+                    });
+                    $('.new-prod-list').html(newProducts);
+
+                    const bestSellers = state.bestSellers.map(product => {
+                        let { _id, title, price, image } = product;
+
+                        image = image ? `../${image}` : '../ecommerce/img/product-details/l1.jpg';
+
+                        price = numWithCommas(price.toFixed(2));
+
+                        return `<div class="single-best-seller">
+                                        <div class="best-seller-img">
+                                            <a href="/product?id=${_id}"><img src="${image}" alt="no image" style="height: 100px; width: 100px;" /></a>
+                                        </div>
+                                        <div class="best-seller-text">
+                                            <h3><a href="#">${title}</a></h3>
+                                            <span>₱${price}</span>
+                                        </div>
+                                    </div>`;
+                    });
+
+                    $('.bestseller-list').html(bestSellers);
+                }
+
+                function productCard(product) {
+                    const { _id, title, type, stock, ratings } = product;
+
+                    let { price, image } = product;
+                    const { remainingStock } = stock;
+
+                    image = image ? `../${image}` : '../ecommerce/img/product-details/l1.jpg';
+                    price = numWithCommas(price.toFixed(2));
+
+                    return `<div class="product-width col-md-6 col-xl-4 col-lg-6">
+                        <div class="product-wrapper mb-35 product-detail-btn" data-productId="${_id}" style="cursor: pointer;">
+                            <div class="product-img">
+                                <img src="${image}" alt="no image" />
+                                <div class="product-action">
+                                    <a class="action-plus-2 p-action-none add-to-cart" title="Add To Cart" href="#" data-productId="${_id}" data-remainingStock="${remainingStock}">
+                                        <i class="ti-shopping-cart"></i>
+                                    </a>
+                                    <a class="action-reload product-detail-btn" title="View Product" href="#" data-productId="${_id}">
+                                        <i class=" ti-search"></i>
+                                    </a>
+                                </div>
+                                <div class="product-content-wrapper">
+                                    <div class="product-title-spreed" style="width: 60% !important;">
+                                        <h4 class="text-truncate"><a href="product-details.html">${title}</a></h4>
+                                        <span>${type}</span>
+                                        <div class="rateYo mt-2" data-rateyo-rating="${ratings}" data-rateyo-spacing="5px" data-rateyo-star-width="20px"></div>
+                                    </div>
+                                    <div class="product-price">
+                                        <span>₱${price}</span>
+                                        <p class="text-right">${remainingStock} stock</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+
+                $('body').on('click', '#search-btn', function(event) {
+                    const text = $('#search-text')
+                        .val()
+                        .toLowerCase();
+                    const type = $('.widget-categories a.text-warning').attr('data-type');
+
+                    loadingDialog.open();
+                    getProducts(type, text);
+                });
+
+                $('body').on('keypress', '#search-text', function(e) {
+                    if (e.which == 13) {
+                        const text = $('#search-text')
+                            .val()
+                            .toLowerCase();
+                        const type = $('.widget-categories a.text-warning').attr('data-type');
+
+                        loadingDialog.open();
+                        getProducts(type, text);
+                    }
+                });
+
+                $('body').on('click', '.product-detail-btn', function(event) {
+                    event.stopPropagation();
+                    const id = $(this).attr('data-productId');
+
+                    window.location.href = `product?id=${id}`;
+                });
+
+                $('body').on('click', '.add-to-cart', function(event) {
+                    event.stopPropagation();
+
+                    const isLoggedIn = $('#isLoggedIn').val();
+                    if (isLoggedIn == 'false') {
+                        return (window.location.href = 'login');
+                    }
+
+                    const id = $(this).attr('data-productId');
+                    const cartProducts = JSON.parse(localStorage.getItem('cart'));
+
+                    const index = cartProducts.findIndex(p => p._id === id);
+                    const remainingStock = $(this).attr('data-remainingStock');
+
+                    if (index != -1) {
+                        const quantity = Number(cartProducts[index].quantity) + Number(1);
+                        if (quantity > remainingStock) return warningDialog('Insufficient stock');
+                        else cartProducts[index] = { ...cartProducts[index], quantity };
+                    } else {
+                        let product = state.products.find(p => p._id === id);
+
+                        product = {
+                            _id: product._id,
+                            stock: product.stock._id,
+                            title: product.title,
+                            image: product.image,
+                            price: product.price,
+                            quantity: Number(1)
+                        };
+
+                        cartProducts.push(product);
+                    }
+
+                    localStorage.setItem('cart', JSON.stringify(cartProducts));
+                    createGlobalCart();
+                });
+
+                $('body').on('click', '.widget-categories a', function(event) {
+                    $('.widget-categories a').removeClass('text-warning font-weight-bold');
+                    $(this).addClass('text-warning font-weight-bold');
+
+                    $('#search-text').val('');
+
+                    const type = $(this).attr('data-type');
+
+                    loadingDialog.open();
+                    getProducts(type, '');
+                });
+            });
+        </script>
+    </body>
+</html>

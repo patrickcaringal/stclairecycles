@@ -1,0 +1,179 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/1.4.0/perfect-scrollbar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@coreui/coreui@2.1.12/dist/js/coreui.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.9/jquery.lazy.plugins.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
+<!-- Plugins and scripts required by this view-->
+<!-- <script src="../node_modules/chart.js/dist/Chart.min.js"></script>
+<script src="../node_modules/@coreui/coreui-plugin-chartjs-custom-tooltips/dist/js/custom-tooltips.min.js"></script> -->
+<!-- <script src="js/main.js"></script> -->
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
+
+<script>
+    const session = JSON.parse(localStorage.getItem('account_admin'));
+
+    setSession(session);
+    if (session) roleAuthorization();
+
+    $('body').on('click', '#logout-btn', function(e) {
+        e.preventDefault();
+
+        removeCookies();
+        // localStorage.clear();
+        localStorage.removeItem('account_admin');
+        window.location.href = 'login';
+    });
+
+    function setSession(session) {
+        if (session) {
+            const { firstname, lastname } = session;
+            $('.session-name').text(`${firstname} ${lastname}`);
+        }
+    }
+
+    function roleAuthorization() {
+        let { role } = session;
+        role = role.toLowerCase();
+
+        $(`.hide-${role}`).remove();
+    }
+
+    function loadingDialogClose() {
+        setTimeout(() => {
+            loadingDialog.close();
+        }, 500);
+    }
+
+    const loadingDialog = $.dialog({
+        title: 'Loading',
+        content: 'Please wait ...',
+        lazyOpen: true,
+        theme: 'modern',
+
+        closeIcon: false,
+        animationSpeed: 200,
+        columnClass: 'small',
+        icon: 'fa fa-spinner fa-spin'
+    });
+
+    function successDialog(content) {
+        const load = $.dialog({
+            title: 'Success',
+            content,
+            theme: 'modern',
+            type: 'green',
+            lazyOpen: true,
+
+            closeIcon: true,
+            animationSpeed: 200,
+            columnClass: 'small',
+            icon: 'fa fa-check-circle'
+        });
+
+        load.open();
+
+        setTimeout(() => {
+            load.close();
+        }, 1500);
+    }
+
+    function errorDialog(content) {
+        const load = $.dialog({
+            title: 'Error',
+            content,
+            theme: 'modern',
+            type: 'red',
+            lazyOpen: true,
+
+            closeIcon: true,
+            animationSpeed: 200,
+            columnClass: 'small',
+            icon: 'fa fa-times-circle'
+        });
+
+        load.open();
+
+        setTimeout(() => {
+            load.close();
+        }, 1500);
+    }
+
+    function warningDialog(content) {
+        const load = $.dialog({
+            title: 'Warning',
+            content,
+            theme: 'modern',
+            type: 'orange',
+            lazyOpen: true,
+
+            closeIcon: true,
+            animationSpeed: 200,
+            columnClass: 'small',
+            icon: 'fa fa-exclamation-circle'
+        });
+
+        load.open();
+
+        setTimeout(() => {
+            load.close();
+        }, 1500);
+    }
+
+    function disableButton(button) {
+        $(button).attr('disabled', true);
+        $(button).append(' <i class="fa fa-spinner fa-spin fa-fw"></i>');
+    }
+
+    function enableButton(button) {
+        $(button).attr('disabled', false);
+        $(button)
+            .find('i')
+            .remove();
+    }
+
+    $.fn.serializeObject = function() {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name]) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+
+        return o;
+    };
+
+    function isValidEmail(email) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function numWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function removeCookies() {
+        document.cookie = 'session_admin =; expires = Thu, 01 Jan 1970 00:00:00 UTC';
+        // var res = document.cookie;
+        // var multiple = res.split(';');
+        // for (var i = 0; i < multiple.length; i++) {
+        //     var key = multiple[i].split('=');
+        //     document.cookie = key[0] + ' =; expires = Thu, 01 Jan 1970 00:00:00 UTC';
+        // }
+    }
+</script>

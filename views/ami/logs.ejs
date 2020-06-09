@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row h-100">
+                        <div class="col-lg-12" id="table-card">
+                            <div class="card">
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <input class="form-control" id="filter-stock" type="text" placeholder="Search" />
+                                        </div>
+                                        <!-- <div class="col-lg-9">
+                                            <button id="add-mode-btn" class="btn btn-primary btn-pill btn-sm active float-right hide-admin" type="button" aria-pressed="true"><i class="fa fa-plus" aria-hidden="true"></i> Add Supply</button>
+                                        </div> -->
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-lg-12">
+                                            <div class="table-responsive">
+                                                <table id="logs-table" class="table table-bordered animated fadeIn" style="width: 100%;"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script>
+            $(document).ready(function() {
+                const state = {
+                    supplies: [],
+                    logsTable: {},
+                    user: JSON.parse(localStorage.getItem('account_admin'))
+                };
+
+                getLogs();
+
+                async function getLogs() {
+                    loadingDialog.open();
+
+                    try {
+                        const logs = await $.get({ url: '/api/user/logs' });
+                        state.logs = logs;
+
+                        loadtable();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                function loadtable() {
+                    $.fn.dataTable.moment('YYYY-MMM-DD hh:ss A');
+                    state.logsTable = $('#logs-table').DataTable({
+                        destroy: true,
+                        data: state.logs,
+                        dom: 'rtip',
+                        scrollX: true,
+                        autoWidth: true,
+                        columns: [
+                            //
+                            { data: 'userNo', title: 'User No.', width: 125 },
+                            { data: 'name', title: 'User Name', width: 125 },
+                            { data: 'activity', title: 'Activity' },
+                            { data: 'dateCreated', title: 'Date Requested', width: 200, render: (data, type, row, meta) => moment(data).format('YYYY-MMM-DD hh:ss A') }
+                        ],
+
+                        columnDefs: [
+                            {
+                                targets: '_all',
+                                render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">X</span>'
+                            }
+                        ],
+
+                        rowCallback: (row, data, iDataIndex) => {
+                            $(row).attr('id', data._id);
+                        }
+                    });
+                }
+
+                $('body').on('keyup', '#filter-stock', function() {
+                    state.logsTable.search($(this).val()).draw();
+                });
+            });
+        </script>
+    </body>
+</html>

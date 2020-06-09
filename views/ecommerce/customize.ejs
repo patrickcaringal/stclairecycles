@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+    <% include ./partials/head.ejs %>
+    <body>
+        <div class="wrapper">
+            <% include ./partials/navbar.ejs %>
+            <div class="shop-wrapper pt-120 pb-150">
+                <div class="container-fluid mt-5">
+                    <input type="hidden" id="isLoggedIn" value="<%= locals.isLoggedIn %>" />
+                    <input type="text" id="refresh-page" value="no" class="d-none" />
+
+                    <div class="row" style="padding-left: 100px; padding-right: 100px;">
+                        <div class="col-lg-3">
+                            <select class="form-control input-sm" id="bike-part-type-dropdown">
+                                <option>All</option>
+                                <option>Mountain Bike</option>
+                                <option>Road Bike</option>
+                                <option>BMX</option>
+                            </select>
+                            <div class="product-sidebar-area mt-3" style="height: 600px; overflow: scroll;">
+                                <!--   -->
+                                <div class="sidebar-widget mb-55">
+                                    <!-- <h3 class="sidebar-widget">best seller</h3> -->
+                                    <div class="best-seller build-items">
+                                        <!-- <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-12.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Body 1</a></h3>
+                                                <span>$39.9</span> <br />
+                                                <button class="btn btn-warning btn-sm mt-3 add-build" data-part="body">Add to build</button>
+                                                <img class="img-build" src="../../uploads/products/body1.png" alt="no image" hidden />
+                                            </div>
+                                        </div> -->
+                                        <!-- <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-13.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Body 2</a></h3>
+                                                <span>$39.9</span> <br />
+                                                <button class="btn btn-warning btn-sm mt-3 add-build" data-part="body">Add to build</button>
+                                                <img class="img-build" src="../../uploads/products/body2.png" alt="no image" hidden />
+                                            </div>
+                                        </div>
+                                        <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-14.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Fork 1</a></h3>
+                                                <span>$39.9</span> <br />
+                                                <button class="btn btn-warning btn-sm mt-3 add-build" data-part="fork">Add to build</button>
+                                                <img class="img-build" src="../../uploads/products/fork1.png" alt="no image" hidden />
+                                            </div>
+                                        </div>
+                                        <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-14.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Fork 2</a></h3>
+                                                <span>$39.9</span><br />
+                                                <button class="btn btn-warning btn-sm mt-3 add-build" data-part="fork">Add to build</button>
+                                                <img class="img-build" src="../../uploads/products/fork2.png" alt="no image" hidden />
+                                            </div>
+                                        </div>
+                                        <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-14.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Tireset 1</a></h3>
+                                                <span>$39.9</span>
+                                            </div>
+                                        </div>
+                                        <div class="single-best-seller">
+                                            <div class="best-seller-img">
+                                                <a href="#"><img src="../../ecommerce/img/product/product-14.jpg" alt=""/></a>
+                                            </div>
+                                            <div class="best-seller-text">
+                                                <h3><a href="#">Wheelset 1</a></h3>
+                                                <span>$39.9</span>
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-9 p-2 text-center">
+                            <button id="view-build-items" class="btn btn-warning btn-sm text-uppercase p-3" style="border-radius: 50px; color: #ffffff;">view build items</button>
+                            <!-- <button class="btn btn-warning btn-sm text-uppercase p-3" style="border-radius: 50px; color: #ffffff;"></button>  -->
+                            <br />
+                            <canvas id="myCanvas" class="mt-4" width="900" height="500" style="border:1px solid #d3d3d3;">
+                                Your browser does not support the HTML5 canvas tag.
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% include ./partials/footer.ejs %>
+            <!-- modal -->
+            <div class="modal fade" id="viewBuilItemsModal" tabindex="-1" role="dialog" aria-labelledby="viewBuilItemsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-uppercase">Build Items</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <table id="order-table" class="table table-bordered animated fadeIn" style="width: 100%;"></table>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <div class="quickview-plus-minus">
+                                        <div class="quickview-btn-cart pt-2"><span>Set Quantity</span></div>
+                                        <div class="cart-plus-minus">
+                                            <input type="text" id="set-counter" value="1" class="cart-plus-minus-box" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="add-to-cart" class="btn btn-warning btn-sm text-uppercase p-3" style="border-radius: 50px; color: #ffffff;">Add to cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% include ./partials/script.ejs %>
+        <script>
+            // loadingDialog.open();
+
+            // localStorage.setItem('build', JSON.stringify({}));
+
+            $(document).ready(function() {
+                const state = {
+                    products: [],
+                    newProducts: [],
+                    build: {},
+                    bikeType: '',
+                    buildCart: []
+                };
+
+                getProducts();
+
+                async function getProducts() {
+                    loadingDialog.open();
+
+                    try {
+                        const bikePartType = $('#bike-part-type-dropdown').val();
+                        const products = await $.get({ url: `/api/product/build?bikePartType=${bikePartType}` });
+                        state.products = products;
+
+                        buildItems();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                function buildItems() {
+                    const products = state.products;
+
+                    $('.build-items').html(
+                        products.map(i => {
+                            let { image, partType } = i;
+                            image = image ? `../${image}` : '../ecommerce/img/product/product-12.jpg';
+
+                            return `<div class="single-best-seller">
+                                <div class="best-seller-img">
+                                    <a href="#"><img src="${image}" alt="" style="width: 100px; height: 100px;"/></a>
+                                </div>
+                                <div class="best-seller-text">
+                                    <h3><a href="#">${i.title} <small class="text-muted">(${partType})</small></a></h3>
+                                    <span>₱${numWithCommas(i.price.toFixed(2))}</span> <br />
+                                    <button class="btn btn-warning btn-sm mt-3 add-build" data-part="${i.partType}" data-id="${i._id}">Add to build</button>
+                                    <img class="img-build" src="../${i.buildImage}" alt="no image" hidden />
+                                </div>
+                            </div>`;
+                        })
+                    );
+                }
+
+                function drawBuild() {
+                    setTimeout(() => {
+                        const canvas = document.getElementById('myCanvas');
+                        const context = canvas.getContext('2d');
+
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+
+                        const { body, fork, saddle, stem, pedal, tireset, wheelset, chainset } = state.build;
+
+                        if (wheelset) context.drawImage(wheelset, 10, 10);
+                        if (tireset) context.drawImage(tireset, 10, 10);
+                        if (chainset) context.drawImage(chainset, 10, 10);
+                        if (stem) context.drawImage(stem, 10, 10);
+                        if (saddle) context.drawImage(saddle, 10, 10);
+                        if (fork) context.drawImage(fork, 10, 10);
+                        if (body) context.drawImage(body, 10, 10);
+                        if (pedal) context.drawImage(pedal, 10, 10);
+                    }, 500);
+                }
+
+                function loadtable() {
+                    state.table = $('#order-table').DataTable({
+                        destroy: true,
+                        data: state.buildCart,
+                        dom: 'rt',
+                        scrollX: true,
+                        columns: [
+                            //
+                            // {
+                            //     "_id": "5e29b0ef784fa43448a308b3",
+                            //     "title": "Body 2",
+                            //     "description": "asdasdsadas",
+                            //     "type": "Parts",
+                            //     "partType": "Body",
+                            //     "forBuild": true,
+                            //     "price": 1020,
+                            //     "productNo": "P0009",
+                            //     "dateCreated": "2020-01-23T14:42:55.383Z",
+                            //     "dateUpdated": "2020-01-23T14:42:55.383Z",
+                            //     "isActive": true,
+                            //     "images": [],
+                            //     "__v": 0,
+                            //     "buildImage": "uploads/products/buildimage_P0009.png",
+                            //     "stock": {
+                            //         "_id": "5e2ac1d6222cfe360ce7aaae",
+                            //         "remainingStock": 8
+                            //     },
+                            //     "stockNo": "S0031",
+                            //     "image": "uploads/products/P0009.png",
+                            //     "reserve": [
+                            //         "5e3836b410034b21b861adea"
+                            //     ]
+                            // }
+
+                            { data: 'image', title: '', width: 60, className: 'text-center', render: (data, type, row, meta) => `<img src="../${data}?${Date.now()}" alt="..." class="rounded" width="50" height="50">` },
+                            { data: 'title', title: 'Product Name' },
+                            { data: 'type', title: 'Bike Type' },
+                            { data: 'partType', title: 'Part Type' },
+                            { data: 'price', title: 'Price', render: (data, type, row, meta) => `₱${numWithCommas(data.toFixed(2))}` },
+                            // { data: 'dateCreated', title: 'Date Ordered', render: (data, type, row, meta) => (data ? moment(data).format('YYYY-MMM-DD hh:ss A') : '<span class="text-danger font-weight-bolder">X</span>') },
+                            // { data: 'total', title: 'Total Price', render: (data, type, row, meta) => ` ₱${numWithCommas(data.toFixed(2))}` },
+                            // // { data: 'card', title: 'Payment Type', render: (data, type, row, meta) => (data == 'Visa' ? `<i class="fa fa-cc-visa mr-2" aria-hidden="true"></i> ****${row.last4}` : `Others ****${row.last4}`) },
+                            // {
+                            //     data: 'status',
+                            //     title: 'Status',
+                            //     render: (data, type, row, meta) => {
+                            //         if (data === 'succeeded') return 'To Ship';
+                            //         else if (data === 'shipping') return 'To Receive ';
+                            //         else if (data === 'delivered') return 'Delivered ';
+                            //     }
+                            // },
+                            {
+                                data: null,
+                                title: 'Action',
+                                orderable: false,
+                                width: 50,
+                                className: 'text-center',
+                                render: (data, type, row, meta) => {
+                                    return `<button class="btn btn-sm btn-pill btn-danger p-2 remove-item-build-btn" type="button" aria-pressed="true" style="border-radius: 50px;"><i class="fa fa-times" aria-hidden="true"></i></button>`;
+                                }
+                            }
+                        ],
+
+                        columnDefs: [
+                            {
+                                targets: '_all',
+                                render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">X</span>'
+                            }
+                        ],
+
+                        rowCallback: (row, data, iDataIndex) => {
+                            $(row).attr('id', data._id);
+
+                            // remove-item-build-btn
+                            $(row)
+                                .find('.remove-item-build-btn')
+                                .off('click')
+                                .on('click', function() {
+                                    delete state.build[data.partType.toLowerCase()];
+                                    state.buildCart = state.buildCart.filter(i => i._id != data._id);
+
+                                    drawBuild();
+                                    loadtable();
+                                });
+                        }
+                    });
+                }
+
+                $('body').on('change', '#bike-part-type-dropdown', function() {
+                    getProducts();
+                });
+
+                $('body').on('click', '.add-build', function() {
+                    const id = $(this).attr('data-id');
+                    const item = $(this)
+                        .parent()
+                        .find('img.img-build')[0];
+                    const part = $(this)
+                        .attr('data-part')
+                        .toLowerCase();
+
+                    const product = state.products.find(i => i._id === id);
+
+                    // blank
+                    if (!state.bikeType && product.bikePartType != 'All') {
+                        state.bikeType = product.bikePartType;
+                    } else if (state.bikeType && product.bikePartType != 'All') {
+                        if (state.bikeType !== product.bikePartType) {
+                            const info = $.dialog({
+                                title: 'Bike Type Mismatch',
+                                content: `Current build is ${state.bikeType}. Cannot add ${product.bikePartType} parts.`,
+                                theme: 'modern',
+                                type: 'blue',
+
+                                animationSpeed: 200,
+                                columnClass: 'small',
+                                icon: 'fa fa-wrench',
+
+                                buttons: {
+                                    okay: () => {},
+                                    cancel: () => {}
+                                }
+                            });
+
+                            info.open();
+
+                            setTimeout(() => {
+                                info.close();
+                            }, 2000);
+
+                            return;
+                        }
+                    }
+
+                    state.build[part] = item;
+
+                    const index = state.buildCart.findIndex(i => i.partType.toLowerCase() === part);
+
+                    if (index === -1) state.buildCart.push(product);
+                    else state.buildCart[index] = { ...product };
+
+                    drawBuild();
+                });
+
+                $('body').on('click', '#view-build-items', function() {
+                    const buildCart = [...state.buildCart];
+
+                    $('#viewBuilItemsModal').modal();
+                    $('#set-counter').val('1');
+
+                    setTimeout(() => {
+                        loadtable();
+                    }, 500);
+                });
+
+                $('body').on('click', '#add-to-cart', function() {
+                    const cartProducts = JSON.parse(localStorage.getItem('cart')) || [];
+                    const buildCart = [...state.buildCart];
+                    const setCount = $('#set-counter').val();
+
+                    console.log(JSON.stringify(cartProducts, '', 4));
+
+                    if (!buildCart.length) return warningDialog('Add an item to your build.');
+
+                    const products = buildCart.map(i => ({
+                        _id: i._id,
+                        stock: i.stock._id,
+                        title: i.title,
+                        image: i.image,
+                        price: i.price,
+                        quantity: setCount
+                    }));
+
+                    // check each item if existing on cart
+                    // if not exist add to cart
+                    products.forEach(prod => {
+                        const isExisting = cartProducts.find(i => i._id === prod._id);
+                        if (!isExisting) cartProducts.push(prod);
+                    });
+
+                    localStorage.setItem('cart', JSON.stringify(cartProducts));
+                    createGlobalCart();
+
+                    successDialog('Your build successfully added to the cart.');
+                    $('#viewBuilItemsModal').modal('hide');
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row h-100">
+                        <div class="col-lg-12" id="table-card">
+                            <div class="card">
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <input class="form-control" id="filter-product" type="text" placeholder="Search" />
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <button id="add-mode-btn" class="btn btn-info btn-pill btn-sm active float-right hide-admin" type="button" aria-pressed="true"><i class="fa fa-plus" aria-hidden="true"></i> Add Product</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-lg-12">
+                                            <div class="table-responsive">
+                                                <table id="product-table" class="table table-bordered animated fadeIn" style="width: 100%;"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- edit product -->
+                        <div class="col-lg-8 edit-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Update product</strong>
+                                    <button id="update-product-btn" class="btn btn-info btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-pencil" aria-hidden="true"></i> Save Changes</button>
+                                    <button id="back-table-btn" class="btn btn-info btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="update-product-form">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">Product #</label>
+                                                    <input class="form-control" name="productNo" type="text" placeholder="Product #" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Product Name</label>
+                                                    <input class="form-control" name="title" type="text" placeholder="Product Name" />
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Product Description</label>
+                                                    <textarea class="form-control" name="description" placeholder="Product Description" rows="3" style="resize: none;"></textarea>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Product Type</label>
+                                                    <select class="form-control" name="type">
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option>Mountain Bike</option>
+                                                        <option>Road Bike</option>
+                                                        <option>BMX</option>
+                                                        <option>Parts</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Part Type</label>
+                                                    <select class="form-control" name="partType" disabled>
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option>Body</option>
+                                                        <option>Fork</option>
+                                                        <option>Stem</option>
+                                                        <option>Saddle</option>
+                                                        <option>Pedal</option>
+                                                        <option>Chainset</option>
+                                                        <option>Tireset</option>
+                                                        <option>Wheelset</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Bike Part Type</label>
+                                                    <select class="form-control" name="bikePartType" disabled>
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option>All</option>
+                                                        <option>Mountain Bike</option>
+                                                        <option>Road Bike</option>
+                                                        <option>BMX</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Enable for build</label>
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="customCheck" name="forBuild" />
+                                                        <label class="custom-control-label" for="customCheck">Check if Yes</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">Stock</label>
+                                                    <select class="form-control" name="stock"> </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Stock #</label>
+                                                    <input class="form-control" name="stockNo" type="text" placeholder="Stock #" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Quantity</label>
+                                                    <input class="form-control" name="stockCount" type="number" placeholder="Quantity" readonly />
+                                                </div>
+                                                <!-- <div class="form-group">
+                                                    <label for="name">Stock Cost / Pc</label>
+                                                    <input class="form-control" name="cost" type="number" placeholder="Cost / Pc" readonly />
+                                                </div> -->
+                                                <div class="form-group">
+                                                    <label for="name">Selling Price</label>
+                                                    <input class="form-control" name="price" type="number" placeholder="Price" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 edit-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Product Image</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="edit-file-upload" name="image" />
+                                                    <label class="custom-file-label" for="add-prod-file">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row media-preview mt-4"></div>
+                                </div>
+                            </div>
+
+                            <div class="card animated fadeIn build-image">
+                                <div class="card-header">
+                                    <strong class="lead">Build Image</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="edit-build-image-upload" />
+                                                    <label class="custom-file-label" for="edit-build-image-upload">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row media-preview mt-4"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- add product -->
+                        <div class="col-lg-8 add-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Add product</strong>
+                                    <button id="add-product-btn" class="btn btn-primary btn-pill btn-sm active float-right ml-2" type="button" aria-pressed="true"><i class="fa fa-plus" aria-hidden="true"></i> Save Product</button>
+                                    <button id="back-table-btn2" class="btn btn-light btn-pill btn-sm active float-right" type="button" aria-pressed="true"><i class="fa fa-arrow-left" aria-hidden="true"></i> Back</button>
+                                </div>
+                                <div class="card-body">
+                                    <form id="add-product-form">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">Product Name</label>
+                                                    <input class="form-control" name="title" type="text" placeholder="Product Name" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Product Description</label>
+                                                    <textarea class="form-control" name="description" placeholder="Product Description" rows="3" style="resize: none;"></textarea>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Product Type</label>
+                                                    <select class="form-control" name="type">
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option>Mountain Bike</option>
+                                                        <option>Road Bike</option>
+                                                        <option>BMX</option>
+                                                        <option>Parts</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Part Type</label>
+                                                    <select class="form-control" name="partType" disabled>
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option>Body</option>
+                                                        <option>Fork</option>
+                                                        <option>Stem</option>
+                                                        <option>Saddle</option>
+                                                        <option>Pedal</option>
+                                                        <option>Chainset</option>
+                                                        <option>Tireset</option>
+                                                        <option>Wheelset</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Bike Part Type</label>
+                                                    <select class="form-control" name="bikePartType" disabled>
+                                                        <option value="" disabled selected> - Select - </option>
+                                                        <option>All</option>
+                                                        <option>Mountain Bike</option>
+                                                        <option>Road Bike</option>
+                                                        <option>BMX</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="name">Enable for build</label>
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="customCheck2" name="forBuild" disabled />
+                                                        <label class="custom-control-label" for="customCheck2">Check if Yes</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="name">Stock</label>
+                                                    <select class="form-control" name="stock"> </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Quantity</label>
+                                                    <input class="form-control" name="stockCount" type="number" placeholder="Price" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Stock Cost / Pc</label>
+                                                    <input class="form-control" name="cost" type="number" placeholder="Cost / Pc" readonly />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="name">Selling Price</label>
+                                                    <input class="form-control" name="price" type="number" placeholder="Price" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 add-card" style="display: none;">
+                            <div class="card animated fadeIn">
+                                <div class="card-header">
+                                    <strong class="lead">Product Image</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="add-file-upload" name="image" />
+                                                    <label class="custom-file-label" for="add-file-file">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row media-preview mt-4"></div>
+                                </div>
+                            </div>
+                            <div class="card animated fadeIn build-image">
+                                <div class="card-header">
+                                    <strong class="lead">Build Image</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="add-build-image-upload" />
+                                                    <label class="custom-file-label" for="add-build-image-upload">Choose file</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row media-preview mt-4"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script>
+            $(document).ready(function() {
+                const state = {
+                    products: [],
+                    stocks: [],
+                    productTable: {},
+                    updateProduct: {},
+                    logs: {
+                        id: session._id,
+                        userNo: session.userNo,
+                        name: `${session.firstname} ${session.lastname}`
+                    }
+                };
+
+                getProducts();
+
+                async function getProducts() {
+                    loadingDialog.open();
+
+                    try {
+                        const products = await $.get({ url: '/api/product/admin' });
+                        state.products = products;
+
+                        loadtable();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function getAvailableStocks(id, stock) {
+                    loadingDialog.open();
+
+                    try {
+                        let stocks = await $.get({ url: `/api/stock/product/${id}?hasStock=true` });
+                        state.stocks = stocks;
+
+                        stocksDropdown(stock);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function createProduct(product) {
+                    try {
+                        loadingDialog.open();
+
+                        const data = {
+                            data: product,
+                            logs: {
+                                ...state.logs,
+                                activity: `Created product `,
+                                dateCreated: new Date()
+                            }
+                        };
+
+                        const result = await $.post({ url: '/api/product', data: JSON.stringify(data), contentType: 'application/json' });
+                        state.products.push(result);
+
+                        const image = await $.post({ url: `/api/product/upload/image?filename=${result.productNo}`, data: getImageUpload('#add-file-upload'), contentType: false, processData: false });
+
+                        if (product.forBuild) {
+                            const buildimage = await $.post({ url: `/api/product/upload/image?filename=buildimage_${result.productNo}`, data: getImageUpload('#add-build-image-upload'), contentType: false, processData: false });
+                        }
+
+                        setTimeout(() => {
+                            successDialog('Product successfully created.');
+                            $('#back-table-btn2').trigger('click');
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function updateProduct(product) {
+                    try {
+                        loadingDialog.open();
+
+                        const data = {
+                            data: product,
+                            logs: {
+                                ...state.logs,
+                                activity: `Updated product ${state.updateProduct.productNo}`,
+                                dateCreated: new Date()
+                            }
+                        };
+
+                        const result = await $.ajax({ method: 'PUT', url: `/api/product/${state.updateProduct._id}`, data: JSON.stringify(data), contentType: 'application/json' });
+
+                        if (product.image) {
+                            const image = await $.post({ url: `/api/product/upload/image?filename=${result.productNo}&resize=true`, data: getImageUpload('#edit-file-upload'), contentType: false, processData: false });
+                        }
+
+                        if (product.buildImage) {
+                            const buildimage = await $.post({ url: `/api/product/upload/image?filename=buildimage_${result.productNo}`, data: getImageUpload('#edit-build-image-upload'), contentType: false, processData: false });
+                        }
+
+                        const index = state.products.findIndex(p => p._id === result._id);
+                        state.products[index] = { ...result };
+
+                        setTimeout(() => {
+                            successDialog('Product successfully updated.');
+                            $('#back-table-btn').trigger('click');
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function deleteImage(filename) {
+                    loadingDialog.open();
+
+                    try {
+                        const result = await $.ajax({ method: 'DELETE', url: `/api/product/${state.updateProduct._id}/image/${filename}` });
+
+                        const index = state.products.findIndex(p => p._id === result._id);
+                        state.products[index] = { ...state.products[index], ...result };
+
+                        state.updateProduct = result;
+                        updateMode();
+
+                        setTimeout(() => {
+                            successDialog('Product image successfully deleted.');
+                        }, 1000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                function loadtable() {
+                    state.productTable = $('#product-table').DataTable({
+                        destroy: true,
+                        data: state.products,
+                        dom: 'rtip',
+                        scrollX: true,
+                        autoWidth: true,
+                        columns: [
+                            //
+                            {
+                                data: 'image',
+                                title: 'Image',
+                                width: 60,
+                                className: 'text-center',
+                                render: (data, type, row, meta) => {
+                                    if (data) return `<img src="../${data}?${Date.now()}" alt="" class="rounded" width="50" height="50">`;
+                                    return '<img src="" alt="image" class="rounded" width="50" height="50">';
+                                }
+                            },
+                            { data: 'productNo', title: 'Product #' },
+                            {
+                                data: 'stockNo',
+                                title: 'Stock #',
+                                render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">No stock linked</span>'
+                            },
+                            { data: 'title', title: 'Product Name' },
+                            { data: 'description', title: 'Description' },
+                            { data: 'type', title: 'Type' },
+                            { data: 'price', title: 'Price', width: 50, render: (data, type, row, meta) => `₱${numWithCommas(data.toFixed(2))}` },
+                            {
+                                data: 'stock.remainingStock',
+                                title: 'Stock',
+                                width: 50,
+                                className: 'text-center',
+                                render: (data, type, row, meta) => {
+                                    if (data === 0) return data;
+                                    return data || '<span class="text-danger font-weight-bolder">No stock linked</span>';
+                                }
+                            },
+                            {
+                                data: 'createdBy',
+                                title: 'Created By',
+                                render: (data, type, row, meta) => {
+                                    if (row.createdBy) return `${row.createdBy.firstname} ${row.createdBy.lastname}`;
+                                    else return '<span class="text-danger font-weight-bolder">X</span>';
+                                }
+                            },
+
+                            {
+                                data: null,
+                                title: 'Action',
+                                className: 'text-center',
+                                render: (data, type, row, meta) => {
+                                    return `<button class="btn btn-sm btn-pill btn-info active edit-btn" type="button" aria-pressed="true"><i class="fa fa-pencil" aria-hidden="true"></i></button>`;
+                                    // <button class="btn btn-sm btn-pill btn-info active delete-btn" type="button" aria-pressed="true"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                }
+                            }
+                        ],
+
+                        columnDefs: [
+                            {
+                                targets: '_all',
+                                render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">X</span>'
+                            }
+                        ],
+
+                        rowCallback: (row, data, iDataIndex) => {
+                            $(row).attr('id', data._id);
+
+                            if (data.stock) {
+                                if (data.stock.remainingStock <= 0) $(row).addClass('bg-danger');
+                            }
+
+                            if (!data.stock) $(row).addClass('bg-warning');
+
+                            $(row)
+                                .find('.edit-btn')
+                                .on('click', function() {
+                                    state.updateProduct = data;
+                                    updateMode();
+                                });
+                        }
+                    });
+
+                    if (session.role === 'admin') state.productTable.column(9).visible(false);
+                    if (session.role === 'staff') state.productTable.column(8).visible(false);
+                }
+
+                function stocksDropdown(stock) {
+                    const stocks = state.stocks;
+
+                    $('#update-product-form select[name="stock"]')
+                        .empty()
+                        .append('<option selected disabled> - Select - </option>');
+                    stocks.forEach(s => $('#update-product-form select[name="stock"]').append(`<option value="${s._id}">${s.stockNo} - ${s.remainingStock} stock</option>`));
+
+                    if (stock) {
+                        const { _id: stockId, remainingStock } = stock;
+                        setTimeout(() => {
+                            $('.edit-card select[name="stock"]').attr('disabled', remainingStock > 0);
+                            $('.edit-card select[name="stock"]')
+                                .val(stockId)
+                                .trigger('change');
+                        }, 1000);
+                    }
+                }
+
+                function updateMode() {
+                    $('#table-card').hide();
+                    $('.edit-card').show();
+                    $('.add-card').hide();
+
+                    $('.edit-card input, .edit-card textarea, .edit-card select').val('');
+                    $('.edit-card .media-preview').empty();
+                    $('.edit-card .build-image').hide();
+
+                    const { _id, productNo, title, description, type, partType, bikePartType, forBuild, image, buildImage, stockNo, stock } = state.updateProduct;
+
+                    getAvailableStocks(_id, stock);
+
+                    $('.edit-card [name="productNo"]').val(productNo);
+                    $('.edit-card [name="title"]').val(title);
+                    $('.edit-card [name="description"]').val(description);
+                    $('.edit-card [name="type"]').val(type);
+                    $('.edit-card [name="partType"]').val(partType);
+                    $('.edit-card [name="bikePartType"]').val(bikePartType);
+
+                    $('.edit-card select[name="partType"]').prop('disabled', type !== 'Parts');
+                    $('.edit-card select[name="bikePartType"]').prop('disabled', type !== 'Parts');
+                    $('.edit-card input[name="forBuild"]')
+                        .prop('checked', forBuild === true)
+                        .prop('disabled', type !== 'Parts');
+
+                    // $('.edit-card select[name="partType"]').prop('disabled', !forBuild);
+                    // $('.edit-card select[name="bikePartType"]').prop('disabled', !forBuild);
+                    // $('.edit-card input[name="forBuild"]')
+                    //     .prop('checked', forBuild === true)
+                    //     .prop('disabled', !forBuild);
+
+                    if (forBuild) $('.edit-card .build-image').show();
+
+                    // images
+                    $('.edit-card .media-preview:eq(0)').empty().html(`<div class="col-lg-12 text-center">
+                        <img src="../${image}" alt="image" class="img-thumbnail media-img-thumbnail" />
+                    </div>`);
+                    $('.edit-card .build-image .media-preview').html(`<div class="col-lg-12 text-center">
+                        <img src="../${buildImage}" alt="..." class="img-thumbnail media-img-thumbnail" />
+                    </div>`);
+
+                    $('.edit-card select[name="stock"]').attr('disabled', false);
+                    // if (stock) {
+                    //     const { _id: stockId, remainingStock } = stock;
+                    //     setTimeout(() => {
+                    //         $('.edit-card select[name="stock"]').attr('disabled', remainingStock > 0);
+                    //         $('.edit-card select[name="stock"]')
+                    //             .val(stockId)
+                    //             .trigger('change');
+                    //     }, 1000);
+                    // }
+                }
+
+                function getImageUpload(id) {
+                    const files = $(id).get(0).files;
+                    let formData = new FormData();
+
+                    for (let i = 0; i < files.length; ++i) {
+                        const file = $(id).get(0).files[i];
+                        formData.append('image', file);
+                    }
+
+                    return formData;
+                }
+
+                // Add
+                $('body').on('click', '#add-mode-btn', function() {
+                    $('#table-card').hide();
+                    $('.edit-card').hide();
+                    $('.add-card').show();
+
+                    $('.add-card input, .add-card textarea, .add-card select').val('');
+                    $('.add-card .media-preview').empty();
+                    $('.add-card .build-image').hide();
+
+                    $('.add-card select[name="partType"]').prop('disabled', true);
+                    $('.add-card select[name="bikePartType"]').prop('disabled', true);
+                    $('.add-card input[name="forBuild"]')
+                        .prop('checked', false)
+                        .prop('disabled', true);
+                });
+
+                $('body').on('change', '#add-product-form select[name="type"]', function(e) {
+                    const disabled = $(this).val() === 'Parts';
+
+                    $('.build-image').hide();
+                    $('#add-product-form select[name="partType"]')
+                        .val('')
+                        .prop('disabled', !disabled);
+                    $('#add-product-form select[name="bikePartType"]')
+                        .val('')
+                        .prop('disabled', !disabled);
+                    $('#add-product-form input[name="forBuild"]')
+                        .prop('checked', false)
+                        .prop('disabled', !disabled);
+                });
+
+                $('body').on('change', '#add-product-form input[name="forBuild"]', function(e) {
+                    if (this.checked) $('.build-image').show();
+                    else $('.build-image').hide();
+                });
+
+                $('body').on('change', '#add-product-form select[name="stock"]', function(e) {
+                    const id = $(this).val();
+                    const stock = state.stocks.find(s => s._id === id);
+                    const { stockNo, productNo, title, description, type, stock: availStock, cost, sellingPrice } = stock;
+
+                    $('#add-product-form input[name="productNo"]').val(productNo);
+                    $('#add-product-form input[name="stockNo"]').val(stockNo);
+                    $('#add-product-form input[name="title"]').val(title);
+                    $('#add-product-form textarea[name="description"]').val(description);
+                    $('#add-product-form input[name="type"]').val(type);
+
+                    $('#add-product-form input[name="stockCount"]').val(availStock);
+                    $('#add-product-form input[name="cost"]').val(cost);
+                    $('#add-product-form input[name="price"]').val(sellingPrice);
+                });
+
+                $('body').on('change', '#add-file-upload', function(e) {
+                    const files = $(this).get(0).files;
+
+                    $('.add-card .media-preview:eq(0)').empty();
+
+                    if (files.length > 0) {
+                        for (let i = 0; i < files.length; ++i) {
+                            const file = $(this).get(0).files[i];
+
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                // get loaded data and render thumbnail.
+                                $('.add-card .media-preview:eq(0)').append(`<div class="col-lg-12 text-center">
+                                    <img src="${e.target.result}" alt="..." class="img-thumbnail media-img-thumbnail" />
+                                </div>`);
+                            };
+                            // read the image file as a data URL.
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+
+                $('body').on('change', '#add-build-image-upload', function(e) {
+                    const files = $(this).get(0).files;
+
+                    $('.build-image .media-preview').empty();
+
+                    if (files.length > 0) {
+                        for (let i = 0; i < files.length; ++i) {
+                            const file = $(this).get(0).files[i];
+
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                // get loaded data and render thumbnail.
+                                $('.build-image .media-preview').append(`<div class="col-lg-12 text-center">
+                                    <img src="${e.target.result}" alt="..." class="img-thumbnail media-img-thumbnail" />
+                                </div>`);
+                            };
+                            // read the image file as a data URL.
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+
+                $('body').on('click', '#add-product-btn', function() {
+                    let product = $('#add-product-form').serializeObject();
+                    const image = $('#add-file-upload').get(0).files.length;
+
+                    // if (!product.stock) return warningDialog('Select a stock.');
+                    if (!product.title) return warningDialog('Product Name is required.');
+                    if (!product.description) return warningDialog('Product Description is required.');
+                    if (!product.type) return warningDialog('Product Type is required.');
+                    if (image <= 0) return warningDialog('Upload product image.');
+
+                    if (product.type === 'Parts') {
+                        product.forBuild = product.forBuild === '';
+                        if (!product.partType) return warningDialog('Part Type is required.');
+                        if (!product.bikePartType) return warningDialog('Bike Part Type is required.');
+
+                        if (product.forBuild) {
+                            const buildimage = $('#add-build-image-upload').get(0).files.length;
+                            if (buildimage <= 0) return warningDialog('Upload build image.');
+                        }
+                    }
+
+                    product.createdBy = session._id;
+
+                    createProduct(product);
+                });
+
+                // Edit
+                $('body').on('change', '#update-product-form select[name="type"]', function(e) {
+                    const disabled = $(this).val() === 'Parts';
+
+                    $('.edit-card .build-image').hide();
+                    $('#update-product-form select[name="partType"]')
+                        .val('')
+                        .prop('disabled', !disabled);
+                    $('#update-product-form select[name="bikePartType"]')
+                        .val('')
+                        .prop('disabled', !disabled);
+                    $('#update-product-form input[name="forBuild"]')
+                        .prop('checked', false)
+                        .prop('disabled', !disabled);
+                });
+
+                $('body').on('change', '#update-product-form input[name="forBuild"]', function(e) {
+                    if (this.checked) $('.edit-card .build-image').show();
+                    else $('.edit-card .build-image').hide();
+                });
+
+                $('body').on('change', '#update-product-form select[name="stock"]', function(e) {
+                    const id = $(this).val();
+                    const stock = state.stocks.find(s => s._id === id);
+                    const { stockNo, remainingStock, sellingPrice } = stock;
+
+                    $('#update-product-form input[name="stockNo"]').val(stockNo);
+                    $('#update-product-form input[name="stockCount"]').val(remainingStock);
+                    $('#update-product-form input[name="price"]').val(sellingPrice.toFixed(2));
+                });
+
+                $('body').on('change', '#edit-file-upload', function(e) {
+                    const files = $(this).get(0).files;
+
+                    $('.edit-card .media-preview:eq(0)').empty();
+
+                    if (files.length > 0) {
+                        for (let i = 0; i < files.length; ++i) {
+                            const file = $(this).get(0).files[i];
+
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                // get loaded data and render thumbnail.
+                                $('.edit-card .media-preview:eq(0)').append(`<div class="col-lg-12 text-center">
+                                    <img src="${e.target.result}" alt="..." class="img-thumbnail media-img-thumbnail" />
+                                </div>`);
+                            };
+                            // read the image file as a data URL.
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+
+                $('body').on('change', '#edit-build-image-upload', function(e) {
+                    const files = $(this).get(0).files;
+
+                    $('.edit-card .build-image .media-preview').empty();
+
+                    if (files.length > 0) {
+                        for (let i = 0; i < files.length; ++i) {
+                            const file = $(this).get(0).files[i];
+
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                // get loaded data and render thumbnail.
+                                $('.edit-card .build-image .media-preview').append(`<div class="col-lg-12 text-center">
+                                    <img src="${e.target.result}" alt="..." class="img-thumbnail media-img-thumbnail" />
+                                </div>`);
+                            };
+                            // read the image file as a data URL.
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+
+                $('body').on('click', '#update-product-btn', function() {
+                    let product = $('#update-product-form').serializeObject();
+                    const image = $('#edit-file-upload').get(0).files.length;
+
+                    // if (!product.stock) return warningDialog('Select a stock.');
+
+                    if (!product.title) return warningDialog('Product Name is required.');
+                    if (!product.description) return warningDialog('Product Description is required.');
+                    if (!product.type) return warningDialog('Product Type is required.');
+                    if (image <= 0 && !state.updateProduct.image) return warningDialog('Upload product image.');
+
+                    if (image > 0) product.image = `uploads/products/${state.updateProduct.productNo}.png`;
+
+                    if (product.type === 'Parts') {
+                        product.forBuild = product.forBuild === '';
+                        if (!product.partType) return warningDialog('Part Type is required.');
+                        if (!product.bikePartType) return warningDialog('Bike Part Type is required.');
+
+                        if (product.forBuild) {
+                            const buildimage = $('#edit-build-image-upload').get(0).files.length;
+                            if (buildimage <= 0 && !state.updateProduct.buildImage) return warningDialog('Upload build image.');
+                            product.buildImage = `uploads/products/buildimage_${state.updateProduct.productNo}.png`;
+                        }
+                    } else {
+                        product.forBuild = false;
+                        product.partType = '';
+                    }
+
+                    updateProduct(product);
+                });
+
+                $('body').on('click', '.delete-image-btn', async function() {
+                    const filename = $(this).attr('data-filename');
+
+                    deleteImage(filename);
+                });
+
+                $('body').on('click', '#back-table-btn, #back-table-btn2', function() {
+                    $('#table-card').show();
+                    $('.edit-card').hide();
+                    $('.add-card').hide();
+
+                    loadtable();
+                });
+
+                $('body').on('keyup', '#filter-product', function() {
+                    state.productTable.search($(this).val()).draw();
+                });
+            });
+        </script>
+    </body>
+</html>

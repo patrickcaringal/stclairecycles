@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row">
+                        <div class="col-6 col-lg-4">
+                            <div class="card">
+                                <div class="card-body p-0 d-flex align-items-center">
+                                    <i class="fa fa-users bg-primary p-4 px-5 font-2xl mr-3"></i>
+                                    <div>
+                                        <div id="customer-count" class="text-value-sm text-primary">0</div>
+                                        <div class="text-muted text-uppercase font-weight-bold small">Customers</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-lg-4">
+                            <div class="card">
+                                <div class="card-body p-0 d-flex align-items-center">
+                                    <i class="fa fa-shopping-cart bg-warning p-4 px-5 font-2xl mr-3"></i>
+                                    <div>
+                                        <div id="product-sold-count" class="text-value-sm text-warning">0</div>
+                                        <div class="text-muted text-uppercase font-weight-bold small">Products Sold <small id="product-sold-label"></small></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-lg-4">
+                            <div class="card">
+                                <div class="card-body p-0 d-flex align-items-center">
+                                    <i class="fa fa-line-chart bg-success p-4 px-5 font-2xl mr-3"></i>
+                                    <div>
+                                        <div id="sales-count" class="text-value-sm text-success">₱0.00</div>
+                                        <div class="text-muted text-uppercase font-weight-bold small">Sales <small id="sales-label"></small></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header text-uppercase">
+                                    <b>Sales vs Expense per month</b>
+                                </div>
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <canvas id="sales_expenseChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header text-uppercase">
+                                    <b>Income per month</b>
+                                </div>
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <canvas id="incomeChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header text-uppercase">
+                                    <b>Sales per month</b>
+                                </div>
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <canvas id="myChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header text-uppercase">
+                                    <b>Stock cost per month</b>
+                                </div>
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <canvas id="costChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+        <script>
+            $(document).ready(function() {
+                const state = {
+                    income: [],
+                    sales: [],
+                    expense: [],
+                    customers: [],
+                    months: [],
+                    logs: {
+                        id: session._id,
+                        userNo: session.userNo,
+                        name: `${session.firstname} ${session.lastname}`
+                    }
+                };
+
+                initMonts();
+                initDashboard();
+
+                function initMonts() {
+                    const numberOfMonths = 12;
+
+                    // const numberOfMonths = moment()
+                    //     .endOf('month')
+                    //     .format('MM');
+
+                    for (let index = 1; index <= numberOfMonths; index++) {
+                        state.months.push(index < 10 ? `0${index}` : `${index}`);
+                    }
+                }
+
+                async function initDashboard() {
+                    try {
+                        loadingDialog.open();
+
+                        $('#product-sold-label, #sales-label').html(`(${moment().format('MMM YYYY')})`);
+
+                        await getSales();
+                        await getExpense();
+                        await getIncome();
+                        await getCustomers();
+                        await getSold();
+                        sales_expenseChart();
+                    } catch (error) {
+                        console.log(error);
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                async function getSales() {
+                    try {
+                        const result = await $.get({ url: '/api/order/dashboard/sales' });
+                        state.sales = state.months.map(i => {
+                            const sale = result.find(j => j._id == i);
+
+                            return {
+                                _id: i,
+                                totalSaleAmount: sale ? (sale.totalSaleAmount ? sale.totalSaleAmount : sale.totalSaleAmount2) : 0
+                            };
+                        });
+
+                        let salesAmount = state.sales.find(i => i._id === moment().format('MM'));
+                        salesAmount = salesAmount ? `₱${numWithCommas(salesAmount.totalSaleAmount.toFixed(2))}` : '₱0.00';
+
+                        $('#sales-count').text(salesAmount);
+                        // salesChart();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    }
+                }
+
+                async function getExpense() {
+                    try {
+                        const result = await $.get({ url: '/api/stock/dashboard/cost' });
+
+                        state.expense = state.months.map(i => {
+                            const sale = result.find(j => j._id == i);
+                            return {
+                                _id: i,
+                                totalSaleAmount: sale ? sale.totalSaleAmount : 0
+                            };
+                        });
+
+                        // costsChart();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    }
+                }
+
+                async function getIncome() {
+                    try {
+                        const start = `2020-01-01`;
+                        const end = moment()
+                            .endOf('month')
+                            .format('YYYY-MM-DD');
+
+                        const result = await $.get({ url: `/api/order/dashboard/income?startOrdered=${start}&endOrdered=${end}` });
+
+                        state.income = state.months.map(i => {
+                            const sale = result.find(j => j._id == i);
+                            return {
+                                _id: i,
+                                income: sale ? sale.income.toFixed(2) : 0
+                            };
+                        });
+
+                        incomeChart();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    }
+                }
+
+                async function getSold() {
+                    try {
+                        const sold = await $.get({ url: '/api/order/dashboard/productsold' });
+                        let soldCount = sold.find(i => i._id === moment().format('MM'));
+                        soldCount = soldCount ? numWithCommas(soldCount.productSold) : 0;
+
+                        $('#product-sold-count').text(soldCount);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    }
+                }
+
+                async function getCustomers() {
+                    try {
+                        const customers = await $.get({ url: '/api/customer' });
+                        state.customers = customers;
+
+                        $('#customer-count').text(state.customers.length);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    }
+                }
+
+                function sales_expenseChart() {
+                    const months = state.sales.map(i => moment(i._id, 'MM').format('MMMM'));
+
+                    const sales = state.sales.map(i => i.totalSaleAmount);
+                    const expense = state.expense.map(i => i.totalSaleAmount);
+
+                    var ctx = document.getElementById('sales_expenseChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: months,
+                            datasets: [
+                                {
+                                    label: 'Sales',
+                                    fill: false,
+                                    data: sales,
+                                    borderColor: 'blue',
+                                    lineTension: 0.1
+                                },
+                                {
+                                    label: 'Expense',
+                                    fill: false,
+                                    data: expense,
+                                    borderColor: 'red',
+                                    lineTension: 0.1
+                                }
+                            ]
+                        },
+                        options: {}
+                    });
+                }
+
+                function incomeChart() {
+                    const months = state.income.map(i => moment(i._id, 'MM').format('MMMM'));
+
+                    const income = state.income.map(i => i.income);
+
+                    var ctx = document.getElementById('incomeChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: months,
+                            datasets: [
+                                {
+                                    label: 'Income',
+                                    fill: false,
+                                    data: income,
+                                    borderColor: 'green',
+                                    lineTension: 0.1
+                                }
+                            ]
+                        },
+                        options: {}
+                    });
+                }
+
+                // function salesChart() {
+                //     const months = state.sales.map(i => moment(i._id, 'MM').format('MMMM'));
+                //     const sales = state.sales.map(i => i.totalSaleAmount);
+
+                //     var ctx = document.getElementById('myChart').getContext('2d');
+                //     var chart = new Chart(ctx, {
+                //         type: 'line',
+                //         data: {
+                //             labels: months,
+                //             datasets: [
+                //                 {
+                //                     label: 'Sales',
+                //                     fill: false,
+                //                     data: sales,
+                //                     borderColor: 'green',
+                //                     lineTension: 0.1
+                //                 }
+                //             ]
+                //         },
+                //         options: {}
+                //     });
+                // }
+
+                // function costsChart() {
+                //     const months = state.expense.map(i => moment(i._id, 'MM').format('MMMM'));
+                //     const costs = state.expense.map(i => i.totalSaleAmount);
+
+                //     var ctx = document.getElementById('costChart').getContext('2d');
+                //     var chart = new Chart(ctx, {
+                //         type: 'line',
+                //         data: {
+                //             labels: months,
+                //             datasets: [
+                //                 {
+                //                     label: 'Costs',
+                //                     fill: false,
+                //                     data: costs,
+                //                     borderColor: 'red',
+                //                     lineTension: 0.1
+                //                 }
+                //             ]
+                //         },
+                //         options: {}
+                //     });
+                // }
+            });
+        </script>
+    </body>
+</html>

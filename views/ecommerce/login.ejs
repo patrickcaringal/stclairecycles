@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+    <% include ./partials/head.ejs %>
+    <style>
+        .jconfirm.jconfirm-modern .jconfirm-box .jconfirm-buttons button {
+            padding: 6px 12px 6px 12px;
+        }
+    </style>
+    <body>
+        <div class="wrapper">
+            <% include ./partials/navbar.ejs %>
+            <div class="login-register-area ptb-130">
+                <div class="container">
+                    <div class="row">
+                        <div id="main-container" class="col-lg-7 ml-auto mr-auto">
+                            <div class="login-register-wrapper">
+                                <div class="login-register-tab-list nav">
+                                    <a class="active" data-toggle="tab" href="#lg1">
+                                        <h4>login</h4>
+                                    </a>
+                                    <a data-toggle="tab" href="#lg2">
+                                        <h4>register</h4>
+                                    </a>
+                                </div>
+                                <div class="tab-content">
+                                    <div id="lg1" class="tab-pane active">
+                                        <div class="login-form-container">
+                                            <div class="login-form">
+                                                <form id="login-form">
+                                                    <input type="text" name="email" placeholder="Username" />
+                                                    <input type="password" name="password" placeholder="Password" />
+
+                                                    <div class="button-box text-center">
+                                                        <!-- <div id="g-recaptcha-login" style="display: inline-block;"></div>
+                                                        <br /> -->
+                                                        <button type="button" id="login-btn" class="btn-style cr-btn mt-3">
+                                                            <span>Login</span>
+                                                        </button>
+                                                        <br />
+                                                        <br />
+                                                        <a href="#" id="forgot-password">Forgot Password?</a>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="lg2" class="tab-pane">
+                                        <div class="login-form-container">
+                                            <div class="login-form">
+                                                <form id="register-form">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <input type="text" placeholder="First Name" name="firstname" />
+                                                            <input type="text" placeholder="Last Name" name="lastname" />
+                                                            <input type="text" placeholder="Email" name="email" />
+                                                            <input type="text" placeholder="Contact # (ex. 09356558374)" name="contactNo" />
+
+                                                            <input type="password" placeholder="Password" name="password" />
+                                                            <input type="password" placeholder="Re-Type Password" id="password2" />
+                                                        </div>
+
+                                                        <div class="col-lg-6">
+                                                            <input type="text" placeholder="Building/House no., Street" name="street" />
+                                                            <select name="province" disabled> </select>
+                                                            <select name="city"> </select>
+
+                                                            <div class="button-box text-center">
+                                                                <div id="g-recaptcha-register" style="display: inline-block;"></div>
+                                                                <br />
+                                                                <button type="button" id="register-btn" class="btn-style cr-btn mt-3">
+                                                                    <span>Register</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% include ./partials/footer.ejs %>
+        </div>
+
+        <% include ./partials/script.ejs %>
+        <!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+        <script src="../../ecommerce/js/address.js"></script>
+
+        <script>
+            var onloadCallback = function() {
+                grecaptchaRegister = grecaptcha.render('g-recaptcha-register', {
+                    sitekey: '6LdtNcgUAAAAAG7DY0ZRjH0_qoHXFqUtzLeltIAn'
+                });
+            };
+
+            $(document).ready(function() {
+                let state = {
+                    email: ''
+                };
+
+                async function authenticateCustomer(credentials) {
+                    disableButton('#login-btn');
+                    loadingDialog.open();
+
+                    try {
+                        const result = await $.post({ url: '/api/customer/auth', data: JSON.stringify(credentials), contentType: 'application/json' });
+                        const result2 = await $.get({ url: `/api/customer/${result._id}/cart` });
+                        const cart = result2.filter(i => i.price && i.remainingStock >= i.quantity);
+
+                        localStorage.setItem('cart', JSON.stringify(cart));
+
+                        localStorage.setItem('account', JSON.stringify(result));
+                        document.cookie = `session=${result._id}`;
+
+                        window.location.href = 'shop';
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                        enableButton('#login-btn');
+                    }
+                }
+
+                async function createCustomer(customer) {
+                    disableButton('#register-btn');
+                    loadingDialog.open();
+
+                    try {
+                        const result = await $.post({ url: '/api/customer', data: JSON.stringify(customer), contentType: 'application/json' });
+
+                        localStorage.setItem('account', JSON.stringify(result));
+                        localStorage.setItem('cart', JSON.stringify([]));
+                        document.cookie = `session=${result._id}`;
+
+                        window.location.href = 'shop';
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                        enableButton('#register-btn');
+                    }
+                }
+
+                async function sendForgotPasswordEmail(email) {
+                    try {
+                        let result = await $.post({ url: 'api/customer/forgotPassword', data: JSON.stringify({ email }), contentType: 'application/json' });
+
+                        console.log(result);
+                        successDialog(`You will receive a link on your email(${state.email}) if an account with this email exist`);
+                    } catch (error) {
+                        console.log(error.responseText);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                $('body').on('click', '#login-btn', function() {
+                    let credentials = $('#login-form').serializeObject();
+
+                    if (!credentials.email.trim() || !credentials.password.trim()) return warningDialog('Email and Password are required.');
+                    if (!isValidEmail(credentials.email.trim())) return warningDialog('Invalid Email.');
+                    // if (!grecaptcha.getResponse(grecaptchaLogin)) return warningDialog('Verify CAPTCHA.');
+                    credentials.email = credentials.email.trim();
+
+                    authenticateCustomer(credentials);
+                });
+
+                $('body').on('click', '#register-btn', function() {
+                    let customer = $('#register-form').serializeObject();
+                    const retypePass = $('#password2').val();
+
+                    if (!customer.firstname.trim()) return warningDialog('First Name is required.');
+                    if (!customer.lastname.trim()) return warningDialog('Last Name is required.');
+                    if (!customer.email.trim()) return warningDialog('Email is required.');
+                    if (!isValidEmail(customer.email)) return warningDialog('Invalid Email.');
+                    if (!customer.contactNo.trim()) return warningDialog('Contact No. is required.');
+                    if (/^\d{10}$/.test(customer.contactNo)) return warningDialog('Invalid Contact No.');
+
+                    if (!customer.street) return warningDialog('Building/House no., Street is required.');
+                    // if (!customer.province) return warningDialog('Province is required.');
+                    if (!customer.city) return warningDialog('City is required.');
+
+                    if (!customer.password.trim()) return warningDialog('Password is required.');
+                    if (customer.password.length < 8) return warningDialog('Password should be above 8 characters.');
+                    if (!retypePass.trim()) return warningDialog('Retype password.');
+                    if (customer.password !== retypePass) return warningDialog('Password not match.');
+                    // if (!grecaptcha.getResponse(grecaptchaRegister)) return warningDialog('Verify CAPTCHA.');
+
+                    customer = {
+                        firstname: customer.firstname,
+                        lastname: customer.lastname,
+                        email: customer.email,
+                        contactNo: customer.contactNo,
+                        password: customer.password,
+                        address: [
+                            {
+                                description: 'Default',
+                                street: customer.street,
+                                province: 'Laguna',
+                                city: customer.city
+                            }
+                        ]
+                    };
+
+                    createCustomer(customer);
+                });
+
+                $('body').on('click', '.login-register-tab-list a', function() {
+                    // grecaptcha.reset();
+                    // console.log();
+
+                    if ($(this).attr('href') == '#lg1') {
+                        $('#main-container')
+                            .addClass('col-lg-7')
+                            .removeClass('col-lg-10');
+                    } else {
+                        $('#main-container')
+                            .removeClass('col-lg-7')
+                            .addClass('col-lg-10');
+
+                        $('select[name="province"]')
+                            .val('Laguna')
+                            .trigger('change');
+                    }
+                });
+
+                loadProvincesAndCities();
+
+                $('body').on('change', 'select[name="province"]', function() {
+                    const province = $(this).val();
+                    const cities = provincesAndCities[province];
+
+                    $('select[name="city"]')
+                        .empty()
+                        .append('<option selected disabled> - Select City - </option>');
+                    cities.forEach(city => $('select[name="city"]').append(`<option value="${city}">${city}</option>`));
+
+                    $('select[name="city"]').attr('disabled', false);
+                });
+
+                function loadProvincesAndCities() {
+                    const provinces = Object.keys(provincesAndCities);
+
+                    $('select[name="province"]')
+                        .empty()
+                        .append('<option selected disabled> - Select Province- </option>');
+                    provinces.forEach(province => $('select[name="province"]').append(`<option value="${province}">${province}</option>`));
+                }
+
+                $('body').on('click', '#forgot-password', function() {
+                    $.confirm({
+                        title: 'Forgot Password',
+                        content: '<input type="text" id="forgot-pass-email" class="form-control" placeholder="Email" />',
+                        theme: 'modern',
+                        type: 'blue',
+
+                        animationSpeed: 200,
+                        columnClass: 'small',
+                        icon: 'fa fa-lock',
+
+                        buttons: {
+                            proceed: () => {
+                                const email = $('#forgot-pass-email').val();
+                                state.email = email;
+
+                                if (!email.trim()) {
+                                    warningDialog('Email is required.');
+                                    return false;
+                                }
+
+                                if (!isValidEmail(email)) {
+                                    warningDialog('Invalid Email.');
+                                    return false;
+                                }
+
+                                loadingDialog.open();
+                                sendForgotPasswordEmail(email);
+                            }
+                        }
+                    });
+                });
+
+                // AUTOMATE REGISTER
+                // $('a[href="#lg2"]').trigger('click');
+
+                // $('input[name="firstname"]').val('John');
+                // $('input[name="lastname"]').val('Doe');
+                // $('input[name="email"]').val('johndoe@gmail.com');
+                // $('input[name="contactNo"]').val('09356558374');
+                // $('input[name="password"]').val('pass');
+                // $('#password2').val('pass');
+
+                // $('input[name="street"]').val('Lakesidenest');
+                // $('input[name="province"]').val('qwerty');
+                // $('input[name="city"]').val('qwerty');
+
+                // $('#register-btn').trigger('click');
+            });
+        </script>
+    </body>
+</html>

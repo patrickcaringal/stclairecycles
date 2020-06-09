@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+    <% include ./partials/head.ejs %>
+    <body>
+        <div class="wrapper">
+            <% include ./partials/navbar.ejs %>
+            <div class="product-details-area fluid-padding-3 ptb-130">
+                <div class="container-fluid">
+                    <input type="hidden" id="isLoggedIn" value="<%= locals.isLoggedIn %>" />
+                    <input type="hidden" id="productId" value="<%= locals.id %>" />
+                    <input type="text" id="refresh-page" value="no" class="d-none" />
+
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div class="product-details-img-content">
+                                <div class="product-details-tab mr-40">
+                                    <div class="product-details-large tab-content">
+                                        <div class="tab-pane active" id="pro-details1">
+                                            <img src="" alt="" class="product-data-mainimage width-100" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="product-details-content">
+                                <h2 class="product-data-title"></h2>
+
+                                <div class="quick-view-rating">
+                                    <span class="product-data-type"></span>
+                                </div>
+                                <div class="rateYo mt-2 mb-3"></div>
+                                <div class="product-price">
+                                    <span class="product-data-price">₱ </span>
+                                    <p class="product-data-remainingStock mt-2"></p>
+                                </div>
+                                <div class="product-overview">
+                                    <h5 class="pd-sub-title">Product Overview</h5>
+                                    <p class="product-data-description">Lorem ipsum dolor sit amet, consectetur adipic it, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercita tion ullamco laboris nisi ut aliquip ex ea commodo.</p>
+                                </div>
+                                <div class="quickview-plus-minus">
+                                    <div class="cart-plus-minus">
+                                        <input type="text" id="order-counter" value="1" class="cart-plus-minus-box" />
+                                    </div>
+                                    <div class="quickview-btn-cart">
+                                        <a class="btn-style cr-btn" id="add-to-cart" href="#"><span>add to cart</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-5">
+                        <div class="col-lg-8">
+                            <p style="font-size: 1.25rem;">
+                                <strong>Reviews <span id="feedback-count" class="badge badge-pill badge-warning ml-2 py-1"></span></strong>
+                            </p>
+                            <ul id="feedback-section" class="list-unstyled">
+                                <!-- <li class="media my-4">
+                                    <div class="media-body">
+                                        <div class="d-flex flex-row">
+                                            <div class="bd-highlight">
+                                                <p class="mt-0 mb-2"><strong>Patrick Caringal</strong></p>
+                                            </div>
+                                            <div class="bd-highlight p-1 pl-2"><div class="rateYo-feedback"></div></div>
+                                        </div>
+
+                                        Cras sit amet nibh libero
+                                    </div>
+                                </li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% include ./partials/footer.ejs %>
+        </div>
+
+        <% include ./partials/script.ejs %>
+        <script>
+            loadingDialog.open();
+
+            $(document).ready(function() {
+                const state = {
+                    product: [],
+                    feedbacks: []
+                };
+
+                getProduct();
+
+                async function getProduct() {
+                    try {
+                        const productId = $('#productId').val();
+
+                        const product = await $.get({ url: `/api/product/${productId}` });
+                        const feedbacks = await $.get({ url: `/api/rating/product/${productId}` });
+
+                        state.product = product;
+                        state.feedbacks = feedbacks;
+                        productDetails();
+                        feedbackSection();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                function productDetails() {
+                    const { _id, title, description, type, stock, ratings } = state.product;
+                    let { price, image } = state.product;
+
+                    price = numWithCommas(price.toFixed(2));
+
+                    $('.product-data-title').html(title);
+                    $('.product-data-type').html(type);
+                    $('.product-data-remainingStock').html(`${stock.remainingStock} stock`);
+                    $('.product-data-description').html(description);
+                    $('.product-data-price').html(`₱${price}`);
+
+                    image = image ? `../${image}` : '../ecommerce/img/product-details/l1.jpg';
+                    $('.product-data-mainimage').attr('src', image);
+
+                    $('.rateYo').rateYo({
+                        rating: ratings,
+                        spacing: '5px',
+                        starWidth: '20px',
+                        readOnly: true
+                    });
+                }
+
+                function feedbackSection() {
+                    const feedbacks = state.feedbacks;
+
+                    const list = feedbacks.map(
+                        i => `<li class="media my-4">
+                                    <div class="media-body">
+                                        <div class="d-flex flex-row">
+                                            <div class="bd-highlight">
+                                                <p class="mt-0 mb-2"><strong>${i.customer.firstname} ${i.customer.lastname}</strong></p>
+                                            </div>
+                                            <div class="bd-highlight p-1 pl-2">
+                                                <div class="rateYo-feedback" data-rateyo-rating="${i.rating}" data-rateyo-spacing="5px" data-rateyo-star-width="12px" data-rateyo-read-only="true"></div>
+                                            </div>
+                                        </div>
+                                        ${i.feedback}
+                                    </div>
+                                </li>`
+                    );
+
+                    $('#feedback-count').html(feedbacks.length);
+
+                    $('#feedback-section')
+                        .empty()
+                        .append(list);
+
+                    $('.rateYo-feedback').rateYo();
+                }
+
+                $('body').on('click', '#add-to-cart', function(event) {
+                    const isLoggedIn = $('#isLoggedIn').val();
+                    if (isLoggedIn == 'false') {
+                        return (window.location.href = 'login');
+                    }
+
+                    const quantity = $('#order-counter').val();
+
+                    const product = { ...state.product, quantity: Number(quantity) };
+
+                    if (isNaN(quantity)) return warningDialog('Please enter a quantity.');
+                    if (quantity < 1) return warningDialog('Please enter a quantity.');
+                    if (quantity > product.stock) return warningDialog('Insufficient stock.');
+
+                    const cartProducts = JSON.parse(localStorage.getItem('cart'));
+
+                    const index = cartProducts.findIndex(p => p._id === product._id);
+                    const remainingStock = product.stock.remainingStock;
+
+                    if (index != -1) {
+                        const addquantity = Number(cartProducts[index].quantity) + Number(quantity);
+                        if (addquantity > remainingStock) return warningDialog('Insufficient stock');
+                        else cartProducts[index] = { ...cartProducts[index], quantity: addquantity };
+                    } else {
+                        if (quantity > remainingStock) return warningDialog('Insufficient stock');
+                        else
+                            cartProducts.push({
+                                _id: product._id,
+                                stock: product.stock._id,
+                                title: product.title,
+                                image: product.image,
+                                price: product.price,
+                                quantity: Number(quantity)
+                            });
+                    }
+
+                    localStorage.setItem('cart', JSON.stringify(cartProducts));
+                    createGlobalCart();
+                });
+            });
+        </script>
+    </body>
+</html>

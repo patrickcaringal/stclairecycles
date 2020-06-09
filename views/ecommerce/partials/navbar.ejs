@@ -1,0 +1,259 @@
+<!-- header start -->
+<header>
+    <div class="header-area transparent-bar ptb-55">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-4">
+                    <div class="logo-small-device">
+                        <a href="/shop"><img alt="" src="../../ecommerce/img/logo/logo.png"/></a>
+                    </div>
+                </div>
+                <div class="col-lg-8 col-md-8 col-8">
+                    <div class="header-contact-menu-wrapper pl-45">
+                        <div class="header-contact">
+                            <!-- <p>WANT TO TALK WITH US +01254 265 987 <%= locals.isLoggedIn %></p> -->
+                        </div>
+                        <% if (locals.isLoggedIn) { %>
+                        <div class="menu-wrapper text-center">
+                            <!-- <button class="menu-toggle">
+                                <img class="s-open" alt="" src="../../ecommerce/img/icon-img/menu.png" />
+                                <img class="s-close" alt="" src="../../ecommerce/img/icon-img/menu-close.png" />
+                            </button> -->
+                            <div class="main-menu open">
+                                <nav>
+                                    <ul>
+                                        <li class="active"><a href="/shop">shop</a></li>
+                                        <li><a href="/customize">customize</a></li>
+                                        <li><a href="/orders">orders</a></li>
+                                        <li class="active"><a href="/account">account</a></li>
+                                        <li class="active"><a href="#" id="logout-btn">logout</a></li>
+                                        <!-- <li>
+                                            <a href="#">shop</a>
+                                            <ul>
+                                                <li><a href="shop.html">shop</a></li>
+                                                <li><a href="product-details.html">product details</a></li>
+                                                <li><a href="checkout.html">checkout</a></li>
+                                                <li><a href="wishlist.html">wishlist</a></li>
+                                                <li><a href="cart.html">cart</a></li>
+                                            </ul>
+                                        </li> -->
+                                        <!-- <li>
+                                            <a href="#">pages</a>
+                                            <ul>
+                                                <li><a href="about-us.html">about us</a></li>
+                                                <li><a href="cart.html">cart page</a></li>
+                                                <li><a href="checkout.html">checkout</a></li>
+                                                <li><a href="wishlist.html">wishlist</a></li>
+                                                <li><a href="login-register.html">login</a></li>
+                                                <li><a href="contact.html">contact</a></li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a href="#">blog</a>
+                                            <ul>
+                                                <li><a href="blog.html">blog</a></li>
+                                                <li><a href="blog-details.html">blog details</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="contact.html">contact us</a></li> -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                    <!-- <div class="header-cart cart-small-device">
+                        <button class="icon-cart">
+                            <i class="ti-shopping-cart"></i>
+                            <span class="count-style">02</span>
+                            <span class="count-price-add">$295.95</span>
+                        </button>
+                        <div class="shopping-cart-content">
+                            <ul>
+                                <li class="single-shopping-cart">
+                                    <div class="shopping-cart-img">
+                                        <a href="#"><img alt="" src="../../ecommerce/img/cart/cart-1.jpg"/></a>
+                                    </div>
+                                    <div class="shopping-cart-title">
+                                        <h3><a href="#">Gloriori GSX 250 R </a></h3>
+                                        <span>Price: $275</span>
+                                        <span>Qty: 01</span>
+                                    </div>
+                                    <div class="shopping-cart-delete">
+                                        <a href="#"><i class="icofont icofont-ui-delete"></i></a>
+                                    </div>
+                                </li>
+                                <li class="single-shopping-cart">
+                                    <div class="shopping-cart-img">
+                                        <a href="#"><img alt="" src="../../ecommerce/img/cart/cart-2.jpg"/></a>
+                                    </div>
+                                    <div class="shopping-cart-title">
+                                        <h3><a href="#">Demonissi Gori</a></h3>
+                                        <span>Price: $275</span>
+                                        <span class="qty">Qty: 01</span>
+                                    </div>
+                                    <div class="shopping-cart-delete">
+                                        <a href="#"><i class="icofont icofont-ui-delete"></i></a>
+                                    </div>
+                                </li>
+                                <li class="single-shopping-cart">
+                                    <div class="shopping-cart-img">
+                                        <a href="#"><img alt="" src="../../ecommerce/img/cart/cart-3.jpg"/></a>
+                                    </div>
+                                    <div class="shopping-cart-title">
+                                        <h3><a href="#">Demonissi Gori</a></h3>
+                                        <span>Price: $275</span>
+                                        <span class="qty">Qty: 01</span>
+                                    </div>
+                                    <div class="shopping-cart-delete">
+                                        <a href="#"><i class="icofont icofont-ui-delete"></i></a>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="shopping-cart-total">
+                                <h4>total: <span>$550.00</span></h4>
+                            </div>
+                            <div class="shopping-cart-btn">
+                                <a class="btn-style cr-btn" href="#">checkout</a>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+                <!-- <div class="mobile-menu-area col-12">
+                    <div class="mobile-menu">
+                        <nav id="mobile-menu-active">
+                            <ul class="menu-overflow">
+                                <li><a href="index.html">HOME</a></li>
+                                <li>
+                                    <a href="#">pages</a>
+                                    <ul>
+                                        <li><a href="about-us.html">about us</a></li>
+                                        <li><a href="cart.html">cart page</a></li>
+                                        <li><a href="checkout.html">checkout</a></li>
+                                        <li><a href="wishlist.html">wishlist</a></li>
+                                        <li><a href="login-register.html">login</a></li>
+                                        <li><a href="contact.html">contact</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">shop</a>
+                                    <ul>
+                                        <li><a href="shop.html">shop</a></li>
+                                        <li><a href="product-details.html">product details</a></li>
+                                        <li><a href="checkout.html">checkout</a></li>
+                                        <li><a href="wishlist.html">wishlist</a></li>
+                                        <li><a href="cart.html">cart</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#">BLOG</a>
+                                    <ul>
+                                        <li><a href="blog.html">blog page</a></li>
+                                        <li><a href="blog-details.html">blog details</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="contact.html"> Contact us</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <div class="header-cart-wrapper">
+            <!-- <div class="header-cart">
+                <button class="icon-cart">
+                    <i class="ti-shopping-cart"></i>
+                    <span class="count-style">02</span>
+                    <span class="count-price-add">$295.95</span>
+                </button>
+                <div class="shopping-cart-content">
+                    <ul>
+                        <li class="single-shopping-cart">
+                            <div class="shopping-cart-img">
+                                <a href="#"><img alt="" src="../../ecommerce/img/cart/cart-1.jpg"/></a>
+                            </div>
+                            <div class="shopping-cart-title">
+                                <h3><a href="#">Gloriori GSX 250 R </a></h3>
+                                <span>Price: $275</span>
+                                <span>Qty: 01</span>
+                            </div>
+                            <div class="shopping-cart-delete">
+                                <a href="#"><i class="icofont icofont-ui-delete"></i></a>
+                            </div>
+                        </li>
+                        <li class="single-shopping-cart">
+                            <div class="shopping-cart-img">
+                                <a href="#"><img alt="" src="../../ecommerce/img/cart/cart-2.jpg"/></a>
+                            </div>
+                            <div class="shopping-cart-title">
+                                <h3><a href="#">Demonissi Gori</a></h3>
+                                <span>Price: $275</span>
+                                <span class="qty">Qty: 01</span>
+                            </div>
+                            <div class="shopping-cart-delete">
+                                <a href="#"><i class="icofont icofont-ui-delete"></i></a>
+                            </div>
+                        </li>
+                        <li class="single-shopping-cart">
+                            <div class="shopping-cart-img">
+                                <a href="#"><img alt="" src="../../ecommerce/img/cart/cart-3.jpg"/></a>
+                            </div>
+                            <div class="shopping-cart-title">
+                                <h3><a href="#">Demonissi Gori</a></h3>
+                                <span>Price: $275</span>
+                                <span class="qty">Qty: 01</span>
+                            </div>
+                            <div class="shopping-cart-delete">
+                                <a href="#"><i class="icofont icofont-ui-delete"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="shopping-cart-total">
+                        <h4>total: <span>$550.00</span></h4>
+                    </div>
+                    <div class="shopping-cart-btn">
+                        <a class="btn-style cr-btn" href="#">checkout</a>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="header-cart">
+                <% if (locals.isLoggedIn) { %>
+                <button class="icon-cart">
+                    <i class="ti-shopping-cart"></i>
+                    <span class="count-style global-cart-counter">0</span>
+                    <span class="count-price-add global-cart-total">₱0.00</span>
+                </button>
+                <div class="shopping-cart-content">
+                    <div class="cart-not-blank">
+                        <ul class="global-cart">
+                            <!-- <li class="single-shopping-cart">
+                            <div class="shopping-cart-title" style="width: 80% !important;">
+                                <h3 class="text-truncate"><a href="#">Gloriori GSX 250 R Gloriori GSX 250 R Gloriori GSX 250 R </a></h3>
+                                <span>Price: $275</span>
+                                <span>Qty: 01</span>
+                            </div>
+                            <div class="shopping-cart-delete">
+                                <a href="#"><i class="icofont icofont-ui-delete"></i></a>
+                            </div>
+                        </li> -->
+                        </ul>
+                        <div class="shopping-cart-total" style="margin-top: 0px;">
+                            <h4>total: <span class="global-cart-total">₱0.00</span></h4>
+                        </div>
+                        <div class="shopping-cart-btn">
+                            <a class="btn-style cr-btn checkout-order-btn" href="/checkout">checkout</a>
+                        </div>
+                    </div>
+                    <h3 class="text-center lead cart-blank">Shop now! Add to your cart.</h3>
+                </div>
+                <% } else { %>
+                <button class="icon-cart">
+                    <i class="ti-shopping-cart"></i>
+                    <span id="redirect-login-btn" class="count-price-add">Login now</span>
+                </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</header>

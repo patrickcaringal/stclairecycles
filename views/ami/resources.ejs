@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+        <style>
+            img.lazy {
+                width: 150px;
+                height: 150px;
+
+                /* optional way, set loading as background */
+                background-image: url('../images/loader.gif');
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+            }
+        </style>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row h-100">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-body animated fadeIn">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-10">
+                                                <h3 class="font-weight-light text-center text-lg-left mt-3 mb-0"><strong>Orders Gallery</strong></h3>
+                                            </div>
+                                            <div class="col-lg-2 text-right">
+                                                <button id="delete-order-resources" type="button" class="btn btn-pill btn-danger active"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <hr class="mt-2 mb-3" />
+
+                                        <div id="order-gallery" class="row text-center text-lg-left"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-body animated fadeIn">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-lg-10">
+                                                <h3 class="font-weight-light text-center text-lg-left mt-3 mb-0"><strong>Products Gallery</strong></h3>
+                                            </div>
+                                            <div class="col-lg-2 text-right">
+                                                <button id="delete-product-resources" type="button" class="btn btn-pill btn-danger active"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <hr class="mt-2 mb-3" />
+
+                                        <div id="product-gallery" class="row text-center text-lg-left"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script>
+            $(document).ready(function() {
+                $.get({ url: '/order/resources/all', async: false })
+                    .then(files => {
+                        const images = files.map(file => {
+                            const { filename, path } = file;
+                            return `<div class="col-lg-4 col-md-4 col-6 pb-4">
+                                        <a href="${path}" target="_blank">
+                                            <img class="img-fluid img-thumbnail lazy" data-src="${path}" src="../images/loader.gif" alt="" />
+                                        </a>
+                                        <strong>${filename}</strong>
+                                    </div>`;
+                        });
+                        $('#order-gallery').html(images);
+
+                        return $.get({ url: '/product/resources/all', async: false });
+                    })
+                    .then(files => {
+                        const images = files.map(file => {
+                            const { filename, path } = file;
+                            return `<div class="col-lg-4 col-md-4 col-6 pb-4">
+                                        <a href="${path}" target="_blank">
+                                            <img class="img-fluid img-thumbnail lazy" data-src="${path}" src="../images/loader.gif" alt="" />
+                                        </a>
+                                        <strong>${filename}</strong>
+                                    </div>`;
+                        });
+
+                        $('#product-gallery').html(images);
+
+                        setTimeout(() => {
+                            $('.lazy').lazy();
+                        }, 500);
+                    })
+                    .fail((xhr, status, error) => {
+                        errorAlert('Something went wrong');
+                        console.log(xhr, status, error);
+                    });
+
+                $('#delete-order-resources').on('click', function() {
+                    if (confirm(`Are you sure you want to delete all order resources`)) {
+                        $.ajax({ method: 'DELETE', url: '/order/resources/all', async: false })
+                            .then(files => {
+                                successAlert('deleted');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
+                            })
+                            .fail((xhr, status, error) => {
+                                errorAlert('Something went wrong');
+                                console.log(xhr, status, error);
+                            });
+                    }
+                });
+
+                $('#delete-product-resources').on('click', function() {
+                    if (confirm(`Are you sure you want to delete all product resources`)) {
+                        $.ajax({ method: 'DELETE', url: '/product/resources/all', async: false })
+                            .then(files => {
+                                successAlert('deleted');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
+                            })
+                            .fail((xhr, status, error) => {
+                                errorAlert('Something went wrong');
+                                console.log(xhr, status, error);
+                            });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

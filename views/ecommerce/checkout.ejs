@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx">
+    <% include ./partials/head.ejs %>
+    <style>
+        .StripeElement {
+            box-sizing: border-box;
+
+            height: 40px;
+
+            padding: 10px 12px;
+
+            border: 1px solid transparent;
+            /* border-radius: 4px; */
+            background-color: #f7f7f7;
+
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            -webkit-transition: box-shadow 150ms ease;
+            transition: box-shadow 150ms ease;
+        }
+
+        .StripeElement--focus {
+            box-shadow: 0 1px 3px 0 #cfd7df;
+        }
+
+        .StripeElement--invalid {
+            border-color: #fa755a;
+        }
+
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
+        }
+
+        .shopping-cart-big {
+            display: block;
+            position: relative;
+            box-shadow: none;
+            padding: 0;
+            width: 100%;
+        }
+    </style>
+    <body>
+        <div class="wrapper">
+            <% include ./partials/navbar.ejs %>
+            <div class="login-register-area ptb-130">
+                <div class="container">
+                    <input type="text" id="refresh-page" value="no" class="d-none" />
+
+                    <div class="row mt-5">
+                        <div class="col-lg-7 ml-auto mr-auto">
+                            <h4 class="mb-4">Shopping Cart</h4>
+                            <div class="login-form-container p-5">
+                                <!-- d-none -->
+                                <div class="shopping-cart-content shopping-cart-big">
+                                    <!-- <ul class="global-cart"></ul> -->
+                                    <ul id="order-list"></ul>
+
+                                    <div class="shopping-cart-total">
+                                        <h4>subtotal: <span id="order-subtotal">₱0.00</span></h4>
+                                        <h4>tax <small id="tax-value">(0%)</small>: <span id="tax-total">₱0.00</span></h4>
+                                        <h4>shipping fee <small>(free shipping orders above ₱5,000.00)</small>: <span id="shipping-total">₱0.00</span></h4>
+                                        <h4 class="mt-3">total: <span id="order-total" style="font-weight: bolder;">₱0.00</span></h4>
+                                    </div>
+                                </div>
+
+                                <h3 class="text-center lead cart-blank">Shop now! Add to your cart.</h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 ml-auto mr-auto">
+                            <h4 class="mb-4">Shipping Address</h4>
+                            <div class="login-form-container p-5">
+                                <div class="login-form">
+                                    <div class="row">
+                                        <div class="col-12 pt-3 pl-3 pr-3 pb-0">
+                                            <select id="ship-address"> </select>
+                                        </div>
+                                        <div class="col-12 pb-3 pl-3 pr-3 pt-0">
+                                            <label id="ship-address-text"> </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-5">
+                        <div class="col-lg-12 text-center">
+                            <button type="button" id="proceed-btn" class="btn btn-warning btn-lg" style="border-radius: 50px; color: #ffffff;">
+                                <span>Proceed to payment</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="payment-modal" tabindex="-1" role="dialog" aria-labelledby="viewBuilItemsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-uppercase">Payment</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div id="paypal-container" class="col-lg-12">
+                                    <!-- <div id="paypal-button"></div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% include ./partials/footer.ejs %>
+        </div>
+
+        <% include ./partials/script.ejs %>
+        <!-- <script src="https://www.paypal.com/sdk/js?client-id=AeN3T4ISTKPHuNfRpbJY4wjJA8tJTJHljK4AL72OTIcVfuWC-fB_VWvuKm3Ryf29X0vB-yNBssJI47eS&currency=PHP"></script> -->
+        <!-- <script src="https://www.paypal.com/sdk/js?currency=PHP&client-id=AXiXfVQJSoQv59orhvMvscOZAWbmrUekpQ-H76-1mhe0KYhfVZC6UiHQBWhNT1Qm9ZLC0LwQJBnPQunQ"></script> -->
+        <script src="https://www.paypal.com/sdk/js?client-id=AXiXfVQJSoQv59orhvMvscOZAWbmrUekpQ-H76-1mhe0KYhfVZC6UiHQBWhNT1Qm9ZLC0LwQJBnPQunQ&currency=PHP&disable-funding=credit,card"></script>
+        <!-- &disable-funding=credit,card -->
+        <!-- <script src="https://js.stripe.com/v3/"></script> -->
+        <script>
+            loadingDialog.open();
+
+            $(document).ready(function() {
+                const state = {
+                    tax: 0,
+                    taxDecimal: 0,
+                    address: JSON.parse(localStorage.getItem('account')).address,
+                    total: 0
+                };
+
+                loadingDialogClose();
+
+                getTax();
+
+                async function getTax() {
+                    try {
+                        const tax = await $.get({ url: '/api/others/tax' });
+                        state.tax = tax.tax;
+                        state.taxDecimal = tax.tax / 100;
+
+                        $('#tax-value').text(`(${state.tax}%)`);
+                        orderList();
+                        shipAddress();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    }
+                }
+
+                async function createOrder() {
+                    try {
+                        loadingDialog.open();
+
+                        const cartProducts = JSON.parse(localStorage.getItem('cart'));
+                        const customerAccount = JSON.parse(localStorage.getItem('account'));
+
+                        const customerName = `${customerAccount.firstname} ${customerAccount.lastname}`;
+                        const addressId = $('#ship-address').val();
+                        const { description, street, province, city } = state.address.find(a => a._id === addressId);
+
+                        const subtotal = parseFloat(cartProducts.reduce((total, i) => total + parseFloat(i.price) * parseFloat(i.quantity), 0));
+                        const taxAmount = Number(subtotal) * state.taxDecimal;
+                        const shippingFee = subtotal < 5000 ? 1 : 0;
+
+                        const orders = {
+                            tax: parseFloat(state.tax),
+                            subtotal,
+                            taxAmount,
+                            shippingFee,
+                            total: Number(subtotal) + Number(taxAmount) + Number(shippingFee),
+
+                            orderCount: cartProducts.length,
+                            shipTo: {
+                                description: description,
+                                address: `${street}, ${city}, ${province}`
+                            },
+                            orders: cartProducts.map(prod => ({
+                                product: prod._id,
+                                stock: prod.stock,
+                                quantity: prod.quantity,
+                                price: prod.price,
+                                total: parseFloat(prod.quantity) * parseFloat(prod.price)
+                            })),
+                            customer: customerAccount._id,
+                            status: 'succeeded'
+                        };
+
+                        const checkout_result = await $.ajax({ method: 'POST', url: '/api/order/checkout', data: JSON.stringify({ orders }), contentType: 'application/json' });
+
+                        successDialog('Purchase successful.');
+
+                        setTimeout(() => {
+                            localStorage.setItem('cart', JSON.stringify([]));
+                            window.location.href = 'orders';
+                        }, 2000);
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                // paypal-container
+                $('body').on('click', '#proceed-btn', () => {
+                    $('#payment-modal').modal();
+                    loadingDialog.open();
+
+                    $('#paypal-container')
+                        .empty()
+                        .append('<div id="paypal-button"></div>');
+
+                    setTimeout(() => {
+                        paypal
+                            .Buttons({
+                                createOrder: (data, actions) => {
+                                    return actions.order.create({
+                                        purchase_units: [
+                                            {
+                                                description: 'St. Claire Cycles Bicycle Parts',
+                                                amount: {
+                                                    currency_code: 'PHP',
+                                                    value: state.total
+                                                }
+                                            }
+                                        ]
+                                    });
+                                },
+                                onApprove: async (data, actions) => {
+                                    const order = await actions.order.capture();
+                                    createOrder();
+                                    $('#payment-modal').modal('hide');
+                                },
+                                onError: err => {
+                                    console.log(err);
+                                }
+                            })
+                            .render('#paypal-button');
+
+                        loadingDialogClose();
+                    }, 1000);
+                });
+
+                $('body').on('change', '#ship-address', function() {
+                    const id = $(this).val();
+                    const address = state.address.find(a => a._id === id);
+                    const { street, province, city } = address;
+
+                    $('#ship-address-text').html(`${street}, ${city},  ${province}`);
+                });
+
+                function orderList() {
+                    let products = JSON.parse(localStorage.getItem('cart')) || [];
+
+                    const cart = products.map(prod => {
+                        let { _id, title, price, quantity, image } = prod;
+                        image = image ? `../${image}` : '../ecommerce/img/product-details/l1.jpg';
+
+                        return `<li class="single-shopping-cart">
+                            <div class="shopping-cart-img">
+                                <a href="#"><img alt="" src="${image}" style="width: 80px; height: auto;" /></a>
+                            </div>
+                            <div class="shopping-cart-title" style="width: 70% !important;">
+                                <h3 class="text-truncate"><a href="#">${title}</a></h3>
+                                <span>Price: ₱${numWithCommas(price.toFixed(2))}</span>
+                                <span>Qty: ${quantity}</span>
+                            </div>
+                            <div class="shopping-cart-delete">
+                                <a href="#"><i class="icofont icofont-ui-delete remove-to-cart" data-id="${_id}"></i></a>
+                            </div>
+                        </li>`;
+                    });
+
+                    const subtotalAmount = products.reduce((total, i) => total + parseFloat(i.price) * parseFloat(i.quantity), 0);
+                    const taxTotal = Number(subtotalAmount) * state.taxDecimal;
+                    const shippingFee = subtotalAmount < 5000 ? 1 : 0;
+
+                    state.total = Number(subtotalAmount) + Number(taxTotal) + Number(shippingFee);
+                    state.total = Number(state.total.toFixed(2));
+
+                    $('#order-list').html(cart);
+                    $('#order-subtotal').html(`₱${numWithCommas(subtotalAmount.toFixed(2))}`);
+                    $('#tax-total').html(`₱${numWithCommas(taxTotal.toFixed(2))}`);
+                    $('#shipping-total').html(`₱${numWithCommas(shippingFee.toFixed(2))}`);
+                    $('#order-total').html(`₱${numWithCommas(state.total.toFixed(2))}`);
+                }
+
+                $('body').on('click', '.remove-to-cart', function() {
+                    const cartProducts = JSON.parse(localStorage.getItem('cart'));
+                    const id = $(this).attr('data-id');
+
+                    const newCartProducts = cartProducts.filter(p => p._id !== id);
+                    localStorage.setItem('cart', JSON.stringify(newCartProducts));
+                    orderList();
+                });
+
+                function shipAddress() {
+                    let address = state.address;
+                    code = address.map(a => {
+                        const { _id, description, street, province, city } = a;
+                        return `<option value="${_id}">${description}</option>`;
+                    });
+
+                    $('#ship-address').html(code);
+
+                    const { street, province, city } = address[0];
+                    $('#ship-address-text').html(`${street}, ${city},  ${province}`);
+                }
+            });
+        </script>
+    </body>
+</html>

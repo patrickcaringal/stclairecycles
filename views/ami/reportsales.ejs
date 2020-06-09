@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ./partials/head.ejs %>
+    </head>
+    <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
+        <% include ./partials/navbar.ejs %>
+        <div class="app-body">
+            <% include ./partials/sidebar.ejs %>
+            <main class="main">
+                <div class="h-100 p-3 ">
+                    <div class="row h-100">
+                        <div class="col-lg-12" id="table-card">
+                            <div class="card">
+                                <div class="card-body animated fadeIn">
+                                    <div class="row">
+                                        <div class="col-lg-2">
+                                            <div id="dateCreated-filter" class="text-truncate" data-start="" data-end="" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                                <i class="fa fa-calendar"></i>
+                                                &nbsp; <span> - Select Date Ordered - </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button id="generate-btn" class="btn btn-info active" type="button" aria-pressed="true"><i class="fa fa-refresh" aria-hidden="true"></i> Generate</button>
+                                            <button id="export-btn" class="btn btn-info active" type="button" aria-pressed="true"><i class="fa fa-download" aria-hidden="true"></i> Export</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-lg-12">
+                                            <div class="table-responsive">
+                                                <table id="order-table" class="table table-bordered animated fadeIn" style="width: 100%;">
+                                                    <tfoot class="d-none">
+                                                        <tr>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th class="text-right" id="total-amount">Total: 0.00</th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <% include ./partials/footer.ejs %> <% include ./partials/script.ejs %>
+        <script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+        <script>
+            // loadingDialog.open();
+
+            $(document).ready(function() {
+                const state = {
+                    orders: [],
+                    orderDetail: {},
+                    orderTable: {},
+                    productTable: {},
+                    user: JSON.parse(localStorage.getItem('account_admin'))
+                };
+
+                async function generateReport(startOrdered, endOrdered) {
+                    try {
+                        loadingDialog.open();
+                        const orders = await $.get({ url: `/api/order/report/sales?startOrdered=${startOrdered}&endOrdered=${endOrdered}` });
+                        state.orders = orders;
+
+                        loadtable();
+                    } catch (error) {
+                        console.log(error);
+                        if (error.responseText) return errorDialog(error.responseText);
+                        else return errorDialog('Something went wrong.');
+                    } finally {
+                        loadingDialogClose();
+                    }
+                }
+
+                const currentYear = moment().format('YYYY');
+                $('#dateCreated-filter').daterangepicker(
+                    {
+                        ranges: {
+                            January: [moment(`${currentYear}-01-01`).startOf('month'), moment(`${currentYear}-01-01`).endOf('month')],
+                            February: [moment(`${currentYear}-02-01`).startOf('month'), moment(`${currentYear}-02-01`).endOf('month')],
+                            March: [moment(`${currentYear}-03-01`).startOf('month'), moment(`${currentYear}-03-01`).endOf('month')],
+                            April: [moment(`${currentYear}-04-01`).startOf('month'), moment(`${currentYear}-04-01`).endOf('month')],
+                            May: [moment(`${currentYear}-05-01`).startOf('month'), moment(`${currentYear}-05-01`).endOf('month')],
+                            June: [moment(`${currentYear}-06-01`).startOf('month'), moment(`${currentYear}-06-01`).endOf('month')],
+                            July: [moment(`${currentYear}-07-01`).startOf('month'), moment(`${currentYear}-07-01`).endOf('month')],
+                            August: [moment(`${currentYear}-08-01`).startOf('month'), moment(`${currentYear}-08-01`).endOf('month')],
+                            September: [moment(`${currentYear}-09-01`).startOf('month'), moment(`${currentYear}-09-01`).endOf('month')],
+                            October: [moment(`${currentYear}-10-01`).startOf('month'), moment(`${currentYear}-10-01`).endOf('month')],
+                            November: [moment(`${currentYear}-11-01`).startOf('month'), moment(`${currentYear}-11-01`).endOf('month')],
+                            December: [moment(`${currentYear}-12-01`).startOf('month'), moment(`${currentYear}-12-01`).endOf('month')]
+                        }
+                    },
+                    function(start, end, label) {
+                        $('#dateCreated-filter span').html(start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY'));
+
+                        $('#dateCreated-filter')
+                            .attr('data-start', start.format('YYYY-MM-DD'))
+                            .attr('data-end', end.format('YYYY-MM-DD'));
+                    }
+                );
+
+                $('body').on('click', '#generate-btn', function() {
+                    const start = $('#dateCreated-filter').attr('data-start');
+                    const end = $('#dateCreated-filter').attr('data-end');
+
+                    if (!start || !end) return warningDialog('Select an Order Date range');
+
+                    generateReport(start, end);
+                });
+
+                $('body').on('click', '#export-btn', function() {
+                    try {
+                        state.orderTable.button(0).trigger(); // export
+                    } catch (error) {
+                        errorDialog('Generate a report first before exporting.');
+                    }
+                });
+
+                function loadtable() {
+                    $('#order-table tfoot').removeClass('d-none');
+
+                    state.orderTable = $('#order-table').DataTable({
+                        destroy: true,
+                        data: state.orders,
+                        dom: 'rtip',
+                        scrollX: true,
+                        autoWidth: true,
+                        columns: [
+                            //
+                            { data: 'orderNo', title: 'Order #' },
+                            {
+                                data: 'customer',
+                                title: 'Customer #',
+                                width: 100,
+                                render: (data, type, row, meta) => {
+                                    if (row.customer) return row.customer.customerNo;
+                                    else return '<span class="text-danger font-weight-bolder">X</span>';
+                                }
+                            },
+                            {
+                                data: 'customer',
+                                title: 'Customer Name',
+                                render: (data, type, row, meta) => {
+                                    if (row.customer) return `${row.customer.firstname} ${row.customer.lastname}`;
+                                    else return '<span class="text-danger font-weight-bolder">X</span>';
+                                }
+                            },
+                            { data: 'dateCreated', title: 'Date Ordered', render: (data, type, row, meta) => (data ? moment(data).format('YYYY-MMM-DD hh:ss A') : '<span class="text-danger font-weight-bolder">X</span>') },
+                            { data: 'orderCount', title: 'No. of Items' },
+                            { data: 'subtotal', title: 'Total', className: 'text-right', render: (data, type, row, meta) => (row.subtotal ? `₱${numWithCommas(data.toFixed(2))}` : `₱${numWithCommas(row.total.toFixed(2))}`) }
+                        ],
+
+                        columnDefs: [
+                            {
+                                targets: '_all',
+                                render: (data, type, row, meta) => data || '<span class="text-danger font-weight-bolder">X</span>'
+                            }
+                        ],
+
+                        buttons: [
+                            {
+                                extend: 'excelHtml5',
+                                title: `${$('#dateCreated-filter span').html()} Sales Report`,
+                                filename: 'St. Claire Cycles Sales Report',
+                                text: 'Export',
+                                footer: true
+                            }
+                        ],
+                        rowCallback: (row, data, iDataIndex) => {
+                            $(row).attr('id', data._id);
+                        },
+                        footerCallback: function(row, data, start, end, display) {
+                            console.log(JSON.stringify(state.orders, '', 4));
+                            const total = state.orders.reduce((accumulator, currentValue) => accumulator + (currentValue.subtotal ? currentValue.subtotal : currentValue.total), 0);
+                            $('#total-amount').html(`Total : ₱ ${numWithCommas(total.toFixed(2))}`);
+                        }
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>
