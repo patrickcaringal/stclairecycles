@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-// const stripe = require('stripe')('sk_test_KoHI9S2p4QJ88RmNr3v2gKGW00Hh4FbSLE');
-const stripe = require('stripe')('sk_live_ZdTJcdF100WrKk4DFaioWgfo00fRiOZXkp');
 const mongoose = require('mongoose');
 const Double = require('@mongoosejs/double');
 const moment = require('moment');
@@ -113,20 +111,12 @@ router.get('/', async (req, res, next) => {
         case 'succeeded':
         case 'shipping':
         case 'delivered':
-            order = await Order.find({ status, isActive: true })
-                .populate('customer', 'customerNo firstname lastname email contactNo')
-                .populate('orders.product', 'productNo title image reserve')
-                .populate('updatedBy', 'firstname lastname')
-                .select('-dateUpdated -isActive -__v');
+            order = await Order.find({ status, isActive: true }).populate('customer', 'customerNo firstname lastname email contactNo').populate('orders.product', 'productNo title image reserve').populate('updatedBy', 'firstname lastname').select('-dateUpdated -isActive -__v');
 
             return res.send(order);
 
         default:
-            order = await Order.find({ isActive: true })
-                .populate('customer', 'customerNo firstname lastname email contactNo')
-                .populate('orders.product', 'productNo title image reserve')
-                .populate('updatedBy', 'firstname lastname')
-                .select('-dateUpdated -isActive -__v');
+            order = await Order.find({ isActive: true }).populate('customer', 'customerNo firstname lastname email contactNo').populate('orders.product', 'productNo title image reserve').populate('updatedBy', 'firstname lastname').select('-dateUpdated -isActive -__v');
 
             return res.send(order);
     }
@@ -134,10 +124,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
     try {
-        const order = await Order.findById(req.params.id)
-            .populate('customer', 'customerNo firstname lastname email contactNo')
-            .populate('orders.product', 'productNo title image type')
-            .select('-dateUpdated -isActive -__v');
+        const order = await Order.findById(req.params.id).populate('customer', 'customerNo firstname lastname email contactNo').populate('orders.product', 'productNo title image type').select('-dateUpdated -isActive -__v');
 
         if (!order) return res.status(404).send('Order not found.');
 
@@ -149,11 +136,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.get('/customer/:id', async (req, res, next) => {
     try {
-        const order = await Order.find({ customer: req.params.id, isActive: true })
-            .populate('customer', 'customerNo firstname lastname email contactNo')
-            .populate('orders.product', 'productNo title image')
-            .populate('updatedBy', 'firstname lastname')
-            .select('-dateUpdated -isActive -__v');
+        const order = await Order.find({ customer: req.params.id, isActive: true }).populate('customer', 'customerNo firstname lastname email contactNo').populate('orders.product', 'productNo title image').populate('updatedBy', 'firstname lastname').select('-dateUpdated -isActive -__v');
 
         res.send(order);
     } catch (e) {
@@ -167,12 +150,8 @@ router.get('/report/sales', async (req, res, next) => {
 
         const order = await Order.find({
             dateCreated: {
-                $gte: moment(startOrdered)
-                    .startOf('day')
-                    .toDate(),
-                $lte: moment(endOrdered)
-                    .endOf('day')
-                    .toDate()
+                $gte: moment(startOrdered).startOf('day').toDate(),
+                $lte: moment(endOrdered).endOf('day').toDate()
             },
             // status: 'delivered',
             isActive: true
@@ -197,12 +176,8 @@ router.get('/report/income', async (req, res, next) => {
             {
                 $match: {
                     dateCreated: {
-                        $gte: moment(startOrdered)
-                            .startOf('day')
-                            .toDate(),
-                        $lte: moment(endOrdered)
-                            .endOf('day')
-                            .toDate()
+                        $gte: moment(startOrdered).startOf('day').toDate(),
+                        $lte: moment(endOrdered).endOf('day').toDate()
                     },
                     isActive: true
                 }
@@ -544,7 +519,7 @@ router.put('/:id/feedback', async (req, res, next) => {
         const order = await Order.findOneAndUpdate({ _id: orderId }, { $set: { 'orders.$[].hasRating': true } }, { multi: true, useFindAndModify: false, new: true });
 
         feedbacks = feedbacks.map(
-            i =>
+            (i) =>
                 new Rating({
                     ...i,
                     order: orderId,
